@@ -10,7 +10,7 @@ require('dotenv').config();
 
 // tests
 
-import ConvertRoute from './routes/convert';
+import ConvertRoute from './routes/issueRoute';
 import FccTestingRoute from './routes/fcc-testing';
 
 interface sessionConfigType {

@@ -30,6 +30,11 @@ const IssueSchema = new mongoose.Schema(
     status_text: {
       type: String,
       required: false
+    },
+    project_name: {
+      type: String,
+      ref: 'Project',
+      required: false
     }
   },
   {

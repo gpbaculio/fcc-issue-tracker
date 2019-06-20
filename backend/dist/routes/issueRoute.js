@@ -13,7 +13,7 @@ class ApiRoutes {
         this.issueController = new issueController_1.default();
     }
     routes(app) {
-        app.route('/api/issues/apitest').post(this.issueController.create);
+        app.route('/api/issues/:project_name').post(this.issueController.create);
     }
 }
 exports.default = ApiRoutes;

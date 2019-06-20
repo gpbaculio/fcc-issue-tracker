@@ -25,14 +25,38 @@ const Home = () => {
         <Col>
           <FormComponent
             type={'POST'}
-            route={'/api/issues/apitest'}
+            route={'/api/issues/:project_name'}
             keys={[
+              'project_name',
               'issue_title',
               'issue_text',
               'created_by',
               'assigned_to',
               'status_text'
             ]}
+            title={'Submit Issue'}
+          />
+        </Col>
+        <Col>
+          <FormComponent
+            type={'PUT'}
+            route={'/api/issues/:project_name'}
+            keys={[
+              'id',
+              'issue_title',
+              'issue_text',
+              'created_by',
+              'assigned_to',
+              'status_text'
+            ]}
+            title={'Submit Issue'}
+          />
+        </Col>
+        <Col>
+          <FormComponent
+            type={'DELETE'}
+            route={'/api/issues/:project_name'}
+            keys={['id']}
             title={'Submit Issue'}
           />
         </Col>

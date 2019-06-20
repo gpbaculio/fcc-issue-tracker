@@ -1,10 +1,11 @@
 export const placeHolders = {
-  id: 'id',
+  id: '*Id',
   issue_title: '*Title',
   issue_text: '*Text',
   created_by: '*Created by',
   assigned_to: '(opt)Assigned to',
-  status_text: '(opt)Status text'
+  status_text: '(opt)Status text',
+  project_name: '*Project name'
 };
 
 export const capitalize = (str: string) =>
@@ -12,4 +13,10 @@ export const capitalize = (str: string) =>
 
 export const removeUnderscore = (str: string) => str.replace('_', ' ');
 
-export const requiredKeys = ['id', 'issue_text', 'created_by'];
+export const requiredKeys = [
+  'id',
+  'project_name',
+  'issue_text',
+  'issue_text',
+  'created_by'
+];

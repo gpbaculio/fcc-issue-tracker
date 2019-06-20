@@ -20,11 +20,10 @@ var __rest = (this && this.__rest) || function (s, e) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const Issue_1 = require("../models/Issue");
+const Project_1 = require("../models/Project");
 class IssueController {
     constructor() {
-        this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const params = __rest(req.body, []);
-            console.log('params ', params);
+        this.createIssue = (res, params) => {
             const newIssue = new Issue_1.default(params);
             newIssue.save((error, issue) => {
                 if (error)
@@ -33,6 +32,43 @@ class IssueController {
                     res.json({
                         issue,
                         message: `Successfully submitted issue ${issue.issue_title}`
+                    });
+            });
+        };
+        this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const params = __rest(req.body, []);
+            const { project_name } = req.params;
+            const project = yield Project_1.default.findOne({ project_name });
+            if (project) {
+                this.createIssue(res, params);
+            }
+            else {
+                const newProject = new Project_1.default({ project_name });
+                newProject.save((error, _project) => {
+                    if (error)
+                        res.status(500).send(error.message);
+                    else {
+                        this.createIssue(res, params);
+                    }
+                });
+            }
+        });
+        this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const _a = req.body, { id } = _a, params = __rest(_a, ["id"]);
+            let query = {};
+            query = Object.keys(params).reduce((obj, key) => {
+                const param = params[key];
+                if (param)
+                    query[key] = param;
+                return query;
+            }, query);
+            Issue_1.default.findOneAndUpdate({ _id: id }, { $set: query }, { new: true }, (error, issue) => {
+                if (error)
+                    res.status(404).send(error.message);
+                else
+                    res.json({
+                        issue,
+                        message: `Successfully updated issue ${issue.issue_title}`
                     });
             });
         });

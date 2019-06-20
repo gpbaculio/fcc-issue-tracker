@@ -2,28 +2,32 @@ import * as mongoose from 'mongoose';
 
 export interface IssueDocument extends mongoose.Document {
   path: string;
-  fileName: string;
+  issue_title: string;
+  issue_text: string;
+  created_by: string;
+  assigned_to: string;
+  status_text: string;
 }
 
 const IssueSchema = new mongoose.Schema(
   {
-    title: {
+    issue_title: {
       type: String,
       required: true
     },
-    text: {
+    issue_text: {
       type: String,
       required: true
     },
-    createdBy: {
+    created_by: {
       type: String,
       required: true
     },
-    assignedTo: {
+    assigned_to: {
       type: String,
       required: false
     },
-    statusText: {
+    status_text: {
       type: String,
       required: false
     }

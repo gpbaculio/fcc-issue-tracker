@@ -10,12 +10,12 @@ const session = require('express-session');
 const uuidv1 = require('uuid/v1');
 require('dotenv').config();
 // tests
-const convert_1 = require("./routes/convert");
+const issueRoute_1 = require("./routes/issueRoute");
 const fcc_testing_1 = require("./routes/fcc-testing");
 class App {
     constructor() {
         this.app = express();
-        this.convertRoute = new convert_1.default();
+        this.convertRoute = new issueRoute_1.default();
         this.fccTestingRoute = new fcc_testing_1.default();
         this.mongoSetup();
         this.app.use(helmet());

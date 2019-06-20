@@ -15,3 +15,8 @@ body {
 .api-form {
   background-color: #87D37C;
 }
+
+code {
+  background-color: #FFFEC4;
+  color: #000000
+}

@@ -4,11 +4,12 @@ import axios from 'axios';
 
 import FormInput from './FormInput';
 
+export type reqMethodType = 'POST' | 'PUT' | 'DELETE';
 interface FormProps {
   keys: FormKeys[];
   title: string;
   route: string;
-  type: 'POST' | 'PUT' | 'DELETE';
+  type: reqMethodType;
 }
 
 interface FormState {
@@ -80,7 +81,6 @@ export class FormComponent extends Component<FormProps, FormState> {
   render() {
     const { title, keys, type, route } = this.props;
     const { loading, alertVisible, message, error } = this.state;
-    console.log('state ', this.state);
     return (
       <Form onSubmit={this.handleSubmit} className='api-form w-75 p-3 mx-auto'>
         <legend className='mb-2 text-center'>{title}</legend>
@@ -95,6 +95,7 @@ export class FormComponent extends Component<FormProps, FormState> {
         {keys.map((k, i) => {
           return (
             <FormInput
+              type={type}
               key={i}
               stateKey={k}
               value={this.state[k] as string}

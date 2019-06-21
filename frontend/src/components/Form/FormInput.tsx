@@ -6,15 +6,18 @@ import {
   placeHolders,
   requiredKeys
 } from './utils';
-import { FormKeys } from './Form';
+import { FormKeys, reqMethodType } from './Form';
 
 interface FormInputProps {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   value: string;
   stateKey: FormKeys;
+  type: reqMethodType;
 }
 
-const FormInput = ({ handleChange, value, stateKey }: FormInputProps) => {
+const FormInput = ({ handleChange, value, stateKey, type }: FormInputProps) => {
+  const placeholder = placeHolders[stateKey];
+  console.log('statek', stateKey);
   return (
     <FormGroup className='mb-1'>
       <Label className='mb-1 col-form-label-sm' for={stateKey}>
@@ -22,13 +25,21 @@ const FormInput = ({ handleChange, value, stateKey }: FormInputProps) => {
       </Label>
       <Input
         bsSize='sm'
-        required={requiredKeys.includes(stateKey)}
+        required={
+          type === 'POST'
+            ? requiredKeys.includes(stateKey)
+            : stateKey === 'id' || stateKey === 'project_name'
+        }
         type='text'
         value={value}
         onChange={handleChange}
         name={stateKey}
         id={stateKey}
-        placeholder={placeHolders[stateKey]}
+        placeholder={
+          type === 'PUT' && !['id', 'project_name'].includes(stateKey)
+            ? placeholder.replace('*', '')
+            : placeholder
+        }
       />
     </FormGroup>
   );

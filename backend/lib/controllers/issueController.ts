@@ -39,12 +39,11 @@ export default class IssueController {
   };
   public update = async (req: Request, res: Response) => {
     const { id, ...params } = req.body;
-    let query = {};
-    query = Object.keys(params).reduce((obj, key) => {
+    const query = Object.keys(params).reduce((q, key) => {
       const param = params[key];
-      if (param) query[key] = param;
-      return query;
-    }, query);
+      if (param) q[key] = param;
+      return q;
+    }, {});
     Issue.findOneAndUpdate(
       { _id: id },
       { $set: query },

@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col } from 'reactstrap';
 
 import { usageSamples, userStories, sampleReturn } from './constants';
-import FormComponent from './Forms/Form';
+import { Form } from './Form';
 
 const Home = () => {
   return (
@@ -23,7 +23,7 @@ const Home = () => {
       <div>{sampleReturn}</div>
       <Row className='my-3'>
         <Col>
-          <FormComponent
+          <Form
             type={'POST'}
             route={'/api/issues/:project_name'}
             keys={[
@@ -38,10 +38,11 @@ const Home = () => {
           />
         </Col>
         <Col>
-          <FormComponent
+          <Form
             type={'PUT'}
             route={'/api/issues/:project_name'}
             keys={[
+              'project_name',
               'id',
               'issue_title',
               'issue_text',
@@ -49,11 +50,11 @@ const Home = () => {
               'assigned_to',
               'status_text'
             ]}
-            title={'Submit Issue'}
+            title={'Update Issue'}
           />
         </Col>
         <Col>
-          <FormComponent
+          <Form
             type={'DELETE'}
             route={'/api/issues/:project_name'}
             keys={['id']}

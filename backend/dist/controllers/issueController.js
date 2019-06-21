@@ -55,20 +55,39 @@ class IssueController {
         });
         this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const _a = req.body, { id } = _a, params = __rest(_a, ["id"]);
-            let query = {};
-            query = Object.keys(params).reduce((obj, key) => {
+            const { project_name } = req.params;
+            const query = Object.keys(params).reduce((q, key) => {
                 const param = params[key];
                 if (param)
-                    query[key] = param;
-                return query;
-            }, query);
-            Issue_1.default.findOneAndUpdate({ _id: id }, { $set: query }, { new: true }, (error, issue) => {
+                    q[key] = param;
+                return q;
+            }, {});
+            const project = yield Project_1.default.findOne({ project_name });
+            if (!project)
+                res.status(404).send('Project does not exist');
+            Issue_1.default.findOneAndUpdate({ _id: id, project_name }, { $set: query }, { new: true }, (error, issue) => {
                 if (error)
-                    res.status(404).send(error.message);
+                    res.status(404).send('Issue not found');
                 else
                     res.json({
                         issue,
                         message: `Successfully updated issue ${issue.issue_title}`
+                    });
+            });
+        });
+        this.delete = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { project_name } = req.params;
+            const { id } = req.body;
+            const project = yield Project_1.default.findOne({ project_name });
+            if (!project)
+                res.status(404).send('Project does not exist');
+            Issue_1.default.findOneAndRemove({ _id: id, project_name }, (error, issue) => {
+                if (error)
+                    res.status(404).send('Issue not found');
+                else
+                    res.json({
+                        issue,
+                        message: `Successfully deleted issue ${issue.issue_title}`
                     });
             });
         });

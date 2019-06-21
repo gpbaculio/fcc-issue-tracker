@@ -57,7 +57,7 @@ const Home = () => {
           <Form
             type={'DELETE'}
             route={'/api/issues/:project_name'}
-            keys={['id']}
+            keys={['project_name', 'id']}
             title={'Submit Issue'}
           />
         </Col>

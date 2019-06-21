@@ -39,17 +39,23 @@ export default class IssueController {
   };
   public update = async (req: Request, res: Response) => {
     const { id, ...params } = req.body;
+    const { project_name } = req.params;
+
     const query = Object.keys(params).reduce((q, key) => {
       const param = params[key];
       if (param) q[key] = param;
       return q;
     }, {});
+
+    const project = await Project.findOne({ project_name });
+    if (!project) res.status(404).send('Project does not exist');
+
     Issue.findOneAndUpdate(
-      { _id: id },
+      { _id: id, project_name },
       { $set: query },
       { new: true },
       (error, issue) => {
-        if (error) res.status(404).send(error.message);
+        if (error) res.status(404).send('Issue not found');
         else
           res.json({
             issue,
@@ -57,6 +63,22 @@ export default class IssueController {
           });
       }
     );
+  };
+  public delete = async (req: Request, res: Response) => {
+    const { project_name } = req.params;
+    const { id } = req.body;
+
+    const project = await Project.findOne({ project_name });
+    if (!project) res.status(404).send('Project does not exist');
+
+    Issue.findOneAndRemove({ _id: id, project_name }, (error, issue) => {
+      if (error) res.status(404).send('Issue not found');
+      else
+        res.json({
+          issue,
+          message: `Successfully deleted issue ${issue.issue_title}`
+        });
+    });
   };
   public getIssues = async (req: Request, res: Response) => {
     const { ...params } = req.query;

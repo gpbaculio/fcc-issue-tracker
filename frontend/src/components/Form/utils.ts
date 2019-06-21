@@ -16,7 +16,7 @@ export const removeUnderscore = (str: string) => str.replace('_', ' ');
 export const requiredKeys = [
   'id',
   'project_name',
-  'issue_text',
+  'issue_title',
   'issue_text',
   'created_by'
 ];

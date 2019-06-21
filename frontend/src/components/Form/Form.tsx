@@ -60,6 +60,7 @@ export class FormComponent extends Component<FormProps, FormState> {
         data: params
       });
       this.setState({
+        error: false,
         ...this.initialFields,
         message: data.message,
         alertVisible: true,

@@ -3,6 +3,7 @@ import { Row, Col } from 'reactstrap';
 
 import { usageSamples, userStories, sampleReturn } from './constants';
 import { Form } from './Form';
+import FindIssue from './FindIssue';
 
 const Home = () => {
   return (
@@ -21,6 +22,11 @@ const Home = () => {
       </ul>
       <h4>Example Return</h4>
       <div>{sampleReturn}</div>
+      <Row>
+        <Col>
+          <FindIssue />
+        </Col>
+      </Row>
       <Row className='my-3'>
         <Col>
           <Form

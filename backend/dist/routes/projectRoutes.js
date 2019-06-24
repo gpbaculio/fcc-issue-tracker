@@ -13,7 +13,7 @@ class ProjectRoutes {
         this.projectController = new projectController_1.default();
     }
     routes(app) {
-        app.route('/api/project').get(this.projectController.getProject);
+        app.route('/api/projects').get(this.projectController.getProject);
     }
 }
 exports.default = ProjectRoutes;

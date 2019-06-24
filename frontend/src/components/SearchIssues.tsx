@@ -2,29 +2,64 @@ import React, { Component } from 'react';
 import { Form, Input, FormGroup, Label } from 'reactstrap';
 import axios from 'axios';
 import SearchAutoComplete from './SearchAutoComplete';
+import Loader from './Loader';
 
 interface SearchIssuesProps {}
-class SearchIssues extends Component<SearchIssuesProps> {
+interface SearchIssuesState {
+  [key: string]: string | boolean | [];
+  text: string;
+  loading: boolean;
+  issues: [];
+  message: string;
+  error: boolean;
+}
+class SearchIssues extends Component<SearchIssuesProps, SearchIssuesState> {
   private initialFields: number | null;
   constructor(props: SearchIssuesProps) {
     super(props);
     this.state = {
       text: '',
       issues: [],
-      loading: false
+      loading: false,
+      message: '',
+      error: false
     };
     this.initialFields = null;
   }
-
+  searchProject = async () => {
+    console.log('search fire!');
+    const { text: project_name } = this.state;
+    try {
+      this.setState({ loading: true });
+      const { data } = await axios({
+        method: 'GET',
+        url: 'api/projects',
+        data: {
+          params: project_name
+        }
+      });
+      console.log('data ', data);
+      this.setState({ loading: false });
+    } catch (error) {
+      this.setState({
+        message: error.response.data,
+        loading: false,
+        error: true
+      });
+    }
+  };
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     this.setState({
       [name]: value
     });
     clearTimeout(this.initialFields as number);
-    this.initialFields = window.setTimeout(() => {}, 1000);
+    this.initialFields = window.setTimeout(() => {
+      this.searchProject();
+    }, 1000);
   };
   render() {
+    const { loading } = this.state;
     return (
       <div className='search-container w-100 p-3 d-flex justify-content-center'>
         <Form inline className='d-flex w-50 justify-content-around'>
@@ -42,7 +77,7 @@ class SearchIssues extends Component<SearchIssuesProps> {
                 id='searchText'
                 placeholder='Project name'
               />
-              <SearchAutoComplete />
+              {loading ? <Loader /> : <SearchAutoComplete />}
             </div>
           </FormGroup>
         </Form>

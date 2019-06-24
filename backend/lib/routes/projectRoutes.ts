@@ -13,6 +13,6 @@ import ProjectController from '../controllers/projectController';
 export default class ProjectRoutes {
   public projectController: ProjectController = new ProjectController();
   public routes(app): void {
-    app.route('/api/project').get(this.projectController.getProject);
+    app.route('/api/projects').get(this.projectController.getProject);
   }
 }

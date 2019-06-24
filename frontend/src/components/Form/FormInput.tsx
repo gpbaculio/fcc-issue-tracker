@@ -17,7 +17,6 @@ interface FormInputProps {
 
 const FormInput = ({ handleChange, value, stateKey, type }: FormInputProps) => {
   const placeholder = placeHolders[stateKey];
-  console.log('statek', stateKey);
   return (
     <FormGroup className='mb-1'>
       <Label className='mb-1 col-form-label-sm' for={stateKey}>

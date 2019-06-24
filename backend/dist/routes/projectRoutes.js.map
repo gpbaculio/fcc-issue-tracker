@@ -1,0 +1,1 @@
+{"version":3,"file":"projectRoutes.js","sourceRoot":"","sources":["../../lib/routes/projectRoutes.ts"],"names":[],"mappings":"AAAA;;;;;;GAMG;AAEH,YAAY,CAAC;;AAEb,wEAAiE;AAEjE,MAAqB,aAAa;IAAlC;QACS,sBAAiB,GAAsB,IAAI,2BAAiB,EAAE,CAAC;IAIxE,CAAC;IAHQ,MAAM,CAAC,GAAG;QACf,GAAG,CAAC,KAAK,CAAC,cAAc,CAAC,CAAC,GAAG,CAAC,IAAI,CAAC,iBAAiB,CAAC,UAAU,CAAC,CAAC;IACnE,CAAC;CACF;AALD,gCAKC"}

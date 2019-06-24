@@ -92,8 +92,8 @@ class IssueController {
             });
         });
         this.getIssues = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const params = __rest(req.query, []);
-            yield Issue_1.default.find(params, (error, issues) => {
+            const { project_name } = req.params;
+            yield Issue_1.default.find({ project_name }, (error, issues) => {
                 if (error)
                     res.status(500).send(error.message);
                 res.json({ issues });

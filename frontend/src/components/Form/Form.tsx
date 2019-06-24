@@ -93,17 +93,15 @@ export class FormComponent extends Component<FormProps, FormState> {
           toggle={this.closeAlert}>
           {message}
         </Alert>
-        {keys.map((k, i) => {
-          return (
-            <FormInput
-              type={type}
-              key={i}
-              stateKey={k}
-              value={this.state[k] as string}
-              handleChange={this.handleChange}
-            />
-          );
-        })}
+        {keys.map((k, i) => (
+          <FormInput
+            type={type}
+            key={i}
+            stateKey={k}
+            value={this.state[k] as string}
+            handleChange={this.handleChange}
+          />
+        ))}
         <Button disabled={loading} type='submit' color='info' className='mt-2'>
           {loading && <Spinner size='sm' color='light' />} Submit
         </Button>

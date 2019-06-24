@@ -10,7 +10,8 @@ require('dotenv').config();
 
 // tests
 
-import ConvertRoute from './routes/issueRoute';
+import IssueRoutes from './routes/issueRoutes';
+import ProjectRoutes from './routes/projectRoutes';
 import FccTestingRoute from './routes/fcc-testing';
 
 interface sessionConfigType {
@@ -23,8 +24,9 @@ interface sessionConfigType {
 
 class App {
   public app: express.Application = express();
-  public convertRoute: ConvertRoute = new ConvertRoute();
+  public issueRoutes: IssueRoutes = new IssueRoutes();
   public fccTestingRoute: FccTestingRoute = new FccTestingRoute();
+  public projectRoutes: ProjectRoutes = new ProjectRoutes();
   private mongoSetup(): void {
     (<any>mongoose).Promise = global.Promise;
     mongoose.connect(process.env.MONGO_URL, {
@@ -68,7 +70,8 @@ class App {
     });
 
     this.fccTestingRoute.routes(this.app);
-    this.convertRoute.routes(this.app);
+    this.issueRoutes.routes(this.app);
+    this.projectRoutes.routes(this.app);
     //404 Not Found Middleware
     this.app.use((req, res, next) => {
       res

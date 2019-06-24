@@ -10,13 +10,15 @@ const session = require('express-session');
 const uuidv1 = require('uuid/v1');
 require('dotenv').config();
 // tests
-const issueRoute_1 = require("./routes/issueRoute");
+const issueRoutes_1 = require("./routes/issueRoutes");
+const projectRoutes_1 = require("./routes/projectRoutes");
 const fcc_testing_1 = require("./routes/fcc-testing");
 class App {
     constructor() {
         this.app = express();
-        this.convertRoute = new issueRoute_1.default();
+        this.issueRoutes = new issueRoutes_1.default();
         this.fccTestingRoute = new fcc_testing_1.default();
+        this.projectRoutes = new projectRoutes_1.default();
         this.mongoSetup();
         this.app.use(helmet());
         this.app.use(helmet.noSniff());
@@ -46,7 +48,8 @@ class App {
             res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
         });
         this.fccTestingRoute.routes(this.app);
-        this.convertRoute.routes(this.app);
+        this.issueRoutes.routes(this.app);
+        this.projectRoutes.routes(this.app);
         //404 Not Found Middleware
         this.app.use((req, res, next) => {
             res

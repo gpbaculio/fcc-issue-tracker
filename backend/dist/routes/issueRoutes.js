@@ -22,4 +22,4 @@ class IssueRoutes {
     }
 }
 exports.default = IssueRoutes;
-//# sourceMappingURL=issueRoute.js.map
+//# sourceMappingURL=issueRoutes.js.map

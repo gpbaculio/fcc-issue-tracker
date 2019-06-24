@@ -9,7 +9,7 @@ import { Request, Response } from 'express';
 import Issue, { IssueDocument } from '../models/Issue';
 import Project, { ProjectDocument } from '../models/Project';
 
-class IssueController {
+export default class IssueController {
   private createIssue = (res, params) => {
     const newIssue = new Issue(params);
     newIssue.save((error, issue) => {
@@ -37,6 +37,7 @@ class IssueController {
       });
     }
   };
+
   public update = async (req: Request, res: Response) => {
     const { id, ...params } = req.body;
     const { project_name } = req.params;
@@ -88,5 +89,3 @@ class IssueController {
     });
   };
 }
-
-export default IssueController;

@@ -1,16 +1,38 @@
 import React, { Component } from 'react';
+import { Spinner } from 'reactstrap';
 
-export default class SearchAutoComplete extends Component {
-  render() {
-    return (
-      <div id='myInputautocomplete-list' className='autocomplete-items'>
-        <div>
-          <strong>A</strong>fghanistan
-        </div>
-        <div>
-          <strong>A</strong>lbania
-        </div>
-      </div>
-    );
-  }
+interface SearchAutoCompleteProps {
+  data: {
+    text: string;
+    issues: [];
+    hasSearched: boolean;
+    loading: boolean;
+  };
 }
+
+const SearchAutoComplete = ({
+  data: { text, issues, hasSearched, loading }
+}: SearchAutoCompleteProps) => {
+  if (!text) return null;
+  return (
+    <div id='myInputautocomplete-list' className='autocomplete-items'>
+      {hasSearched && !issues.length && <div>Project does not exist</div>}
+      {issues.map(({ project_name }: { project_name: string }, i) => {
+        const projectText = project_name.replace(
+          new RegExp(text, 'g'),
+          `<strong>${text}</strong>`
+        );
+        return (
+          <div key={i} dangerouslySetInnerHTML={{ __html: projectText }} />
+        );
+      })}
+      {loading && (
+        <div className='mx-auto d-flex justify-content-center'>
+          <Spinner color='info' className='mr-2' /> Loading...
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default SearchAutoComplete;

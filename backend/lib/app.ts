@@ -25,8 +25,8 @@ interface sessionConfigType {
 class App {
   public app: express.Application = express();
   public issueRoutes: IssueRoutes = new IssueRoutes();
-  public fccTestingRoute: FccTestingRoute = new FccTestingRoute();
   public projectRoutes: ProjectRoutes = new ProjectRoutes();
+  public fccTestingRoute: FccTestingRoute = new FccTestingRoute();
   private mongoSetup(): void {
     (<any>mongoose).Promise = global.Promise;
     mongoose.connect(process.env.MONGO_URL, {
@@ -51,6 +51,16 @@ class App {
     if (process.env.NODE_ENV === 'production') {
       this.app.set('trust proxy', 1); // trust first proxy
       sessionConfig.cookie.secure = true; // serve secure cookies
+      // Serve any static files
+      this.app.use(
+        express.static(path.join(__dirname, '../../frontend/build'))
+      );
+      // Handle React routing, return all requests to React app
+      this.app.get('/*', (req, res) => {
+        res.sendFile(
+          path.join(__dirname, '../../frontend/build', 'index.html')
+        );
+      });
     }
 
     this.app.use(session(sessionConfig));
@@ -62,16 +72,9 @@ class App {
     this.app.use(cors({ optionSuccessStatus: 200, origin: '*' }));
     this.app.use(bodyParser.json());
 
-    // Serve any static files
-    this.app.use(express.static(path.join(__dirname, '../../frontend/build')));
-    // Handle React routing, return all requests to React app
-    this.app.get('/*', (req, res) => {
-      res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
-    });
-
-    this.fccTestingRoute.routes(this.app);
-    this.issueRoutes.routes(this.app);
     this.projectRoutes.routes(this.app);
+    this.issueRoutes.routes(this.app);
+    this.fccTestingRoute.routes(this.app);
     //404 Not Found Middleware
     this.app.use((req, res, next) => {
       res

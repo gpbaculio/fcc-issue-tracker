@@ -12,9 +12,10 @@ interface SearchIssuesState {
   issues: [];
   message: string;
   error: boolean;
+  hasSearched: boolean;
 }
 class SearchIssues extends Component<SearchIssuesProps, SearchIssuesState> {
-  private initialFields: number | null;
+  public timeOut: NodeJS.Timeout | null;
   constructor(props: SearchIssuesProps) {
     super(props);
     this.state = {
@@ -22,44 +23,43 @@ class SearchIssues extends Component<SearchIssuesProps, SearchIssuesState> {
       issues: [],
       loading: false,
       message: '',
-      error: false
+      error: false,
+      hasSearched: false
     };
-    this.initialFields = null;
+    this.timeOut = null;
   }
-  searchProject = async () => {
-    console.log('search fire!');
-    const { text: project_name } = this.state;
-    try {
-      this.setState({ loading: true });
-      const { data } = await axios({
-        method: 'GET',
-        url: 'api/projects',
-        data: {
-          params: project_name
-        }
-      });
-      console.log('data ', data);
-      this.setState({ loading: false });
-    } catch (error) {
-      this.setState({
-        message: error.response.data,
-        loading: false,
-        error: true
-      });
-    }
-  };
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    this.setState({
-      [name]: value
-    });
-    clearTimeout(this.initialFields as number);
-    this.initialFields = window.setTimeout(() => {
-      this.searchProject();
-    }, 1000);
+    this.setState(
+      {
+        [name]: value
+      },
+      async () => {
+        if (this.state.text) {
+          const { text: project_name } = this.state;
+          try {
+            this.setState({ loading: true });
+            const {
+              data: { issues }
+            } = await axios.get('/api/projects', {
+              params: {
+                project_name
+              }
+            });
+            this.setState({ loading: false, issues, hasSearched: true });
+          } catch (error) {
+            this.setState({
+              message: error.response.data,
+              loading: false,
+              error: true
+            });
+          }
+        }
+      }
+    );
   };
   render() {
-    const { loading } = this.state;
+    const { loading, text, issues, hasSearched } = this.state;
     return (
       <div className='search-container w-100 p-3 d-flex justify-content-center'>
         <Form inline className='d-flex w-50 justify-content-around'>
@@ -77,7 +77,9 @@ class SearchIssues extends Component<SearchIssuesProps, SearchIssuesState> {
                 id='searchText'
                 placeholder='Project name'
               />
-              {loading ? <Loader /> : <SearchAutoComplete />}
+              <SearchAutoComplete
+                data={{ loading, text, issues, hasSearched }}
+              />
             </div>
           </FormGroup>
         </Form>

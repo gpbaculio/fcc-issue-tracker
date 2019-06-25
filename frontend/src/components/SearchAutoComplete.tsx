@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Spinner } from 'reactstrap';
 
 interface SearchAutoCompleteProps {
@@ -23,7 +24,9 @@ const SearchAutoComplete = ({
           `<strong>${text}</strong>`
         );
         return (
-          <div key={i} dangerouslySetInnerHTML={{ __html: projectText }} />
+          <Link to={`/${project_name}`}>
+            <div key={i} dangerouslySetInnerHTML={{ __html: projectText }} />
+          </Link>
         );
       })}
       {loading && (

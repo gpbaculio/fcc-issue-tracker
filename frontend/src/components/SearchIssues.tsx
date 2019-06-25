@@ -39,13 +39,7 @@ class SearchIssues extends Component<SearchIssuesProps, SearchIssuesState> {
           const { text: project_name } = this.state;
           try {
             this.setState({ loading: true });
-            const {
-              data: { issues }
-            } = await axios.get('/api/projects', {
-              params: {
-                project_name
-              }
-            });
+            const { data: { issues } } = await axios.get('/api/projects', { params: { project_name } });
             this.setState({ loading: false, issues, hasSearched: true });
           } catch (error) {
             this.setState({

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 class Issue extends Component {
   render() {
-    return <div>asdad</div>;
+    return <div>Project issues component ihihihi</div>;
   }
 }
 

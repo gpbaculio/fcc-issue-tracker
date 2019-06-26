@@ -4,8 +4,8 @@ import axios from 'axios';
 import SearchAutoComplete from './SearchAutoComplete';
 import Loader from './Loader';
 
-interface SearchIssuesProps {}
-interface SearchIssuesState {
+interface SearchProjectProps {}
+interface SearchProjectState {
   [key: string]: string | boolean | [];
   text: string;
   loading: boolean;
@@ -14,9 +14,9 @@ interface SearchIssuesState {
   error: boolean;
   hasSearched: boolean;
 }
-class SearchIssues extends Component<SearchIssuesProps, SearchIssuesState> {
+class SearchIssues extends Component<SearchProjectProps, SearchProjectState> {
   public timeOut: NodeJS.Timeout | null;
-  constructor(props: SearchIssuesProps) {
+  constructor(props: SearchProjectProps) {
     super(props);
     this.state = {
       text: '',
@@ -39,7 +39,9 @@ class SearchIssues extends Component<SearchIssuesProps, SearchIssuesState> {
           const { text: project_name } = this.state;
           try {
             this.setState({ loading: true });
-            const { data: { issues } } = await axios.get('/api/projects', { params: { project_name } });
+            const {
+              data: { issues }
+            } = await axios.get('/api/projects', { params: { project_name } });
             this.setState({ loading: false, issues, hasSearched: true });
           } catch (error) {
             this.setState({
@@ -59,7 +61,7 @@ class SearchIssues extends Component<SearchIssuesProps, SearchIssuesState> {
         <Form inline className='d-flex w-50 justify-content-around'>
           <FormGroup className='flex-grow-1'>
             <Label for='searchText' className='mr-3 col-form-label-lg'>
-              Search issues
+              Search Project
             </Label>
             <div className='autocomplete flex-grow-1 mr-3'>
               <Input

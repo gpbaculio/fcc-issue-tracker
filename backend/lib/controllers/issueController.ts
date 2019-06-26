@@ -14,11 +14,12 @@ export default class IssueController {
     const newIssue = new Issue(params);
     newIssue.save((error, issue) => {
       if (error) res.status(500).send(error.message);
-      else
+      else {
         res.json({
           issue,
           message: `Successfully submitted issue ${issue.issue_title}`
         });
+      }
     });
   };
   public create = async (req: Request, res: Response) => {
@@ -57,11 +58,12 @@ export default class IssueController {
       { new: true },
       (error, issue) => {
         if (error) res.status(404).send('Issue not found');
-        else
+        else {
           res.json({
             issue,
             message: `Successfully updated issue ${issue.issue_title}`
           });
+        }
       }
     );
   };
@@ -73,19 +75,40 @@ export default class IssueController {
     if (!project) res.status(404).send('Project does not exist');
 
     Issue.findOneAndRemove({ _id: id, project_name }, (error, issue) => {
-      if (error) res.status(404).send('Issue not found');
-      else
+      if (error) {
+        res.status(404).send('Issue not found');
+      } else {
         res.json({
           issue,
           message: `Successfully deleted issue ${issue.issue_title}`
         });
+      }
     });
   };
   public getIssues = async (req: Request, res: Response) => {
-    const { project_name } = req.params;
-    await Issue.find({ project_name }, (error, issues) => {
-      if (error) res.status(500).send(error.message);
-      res.json({ issues });
-    });
+    const { project_name, offset, limit } = req.params;
+    const project = await Project.findOne({ project_name });
+    if (project) {
+      Issue.find(
+        { project_name },
+        null,
+        { skip: offset || 0, limit: 5 },
+        (error, issues) => {
+          if (error) {
+            res.status(500).send(error.message);
+          } else {
+            Issue.countDocuments({ project_name }, (error, count) => {
+              if (error) {
+                res.status(500).send(error.message);
+              } else {
+                res.json({ issues, count });
+              }
+            });
+          }
+        }
+      );
+    } else {
+      res.status(500).send('Project does not exist');
+    }
   };
 }

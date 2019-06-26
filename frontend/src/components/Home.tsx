@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap';
 
 import { usageSamples, userStories, sampleReturn } from './constants';
 import { Form } from './Form';
-import SearchIssues from './SearchIssues';
+import SearchProject from './SearchProject';
 
 const Home = () => {
   return (
@@ -24,7 +24,7 @@ const Home = () => {
       <div>{sampleReturn}</div>
       <Row>
         <Col>
-          <SearchIssues />
+          <SearchProject />
         </Col>
       </Row>
       <Row className='my-3'>
@@ -32,14 +32,14 @@ const Home = () => {
           <Form
             type={'POST'}
             route={'/api/issues/:project_name'}
-            keys={[
-              'project_name',
-              'issue_title',
-              'issue_text',
-              'created_by',
-              'assigned_to',
-              'status_text'
-            ]}
+            fields={{
+              project_name: '',
+              issue_title: '',
+              issue_text: '',
+              created_by: '',
+              assigned_to: '',
+              status_text: ''
+            }}
             title={'Submit Issue'}
           />
         </Col>
@@ -47,15 +47,15 @@ const Home = () => {
           <Form
             type={'PUT'}
             route={'/api/issues/:project_name'}
-            keys={[
-              'project_name',
-              'id',
-              'issue_title',
-              'issue_text',
-              'created_by',
-              'assigned_to',
-              'status_text'
-            ]}
+            fields={{
+              project_name: '',
+              id: '',
+              issue_title: '',
+              issue_text: '',
+              created_by: '',
+              assigned_to: '',
+              status_text: ''
+            }}
             title={'Update Issue'}
           />
         </Col>
@@ -63,7 +63,7 @@ const Home = () => {
           <Form
             type={'DELETE'}
             route={'/api/issues/:project_name'}
-            keys={['project_name', 'id']}
+            fields={{ project_name: '', id: '' }}
             title={'Submit Issue'}
           />
         </Col>

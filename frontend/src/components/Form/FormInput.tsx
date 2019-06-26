@@ -13,9 +13,16 @@ interface FormInputProps {
   value: string;
   stateKey: FormKeys;
   type: reqMethodType;
+  disable?: boolean;
 }
 
-const FormInput = ({ handleChange, value, stateKey, type }: FormInputProps) => {
+const FormInput = ({
+  handleChange,
+  value,
+  stateKey,
+  type,
+  disable
+}: FormInputProps) => {
   const placeholder = placeHolders[stateKey];
   return (
     <FormGroup className='mb-1'>
@@ -23,6 +30,7 @@ const FormInput = ({ handleChange, value, stateKey, type }: FormInputProps) => {
         {capitalize(removeUnderscore(stateKey))}
       </Label>
       <Input
+        disabled={disable}
         bsSize='sm'
         required={
           type === 'POST'

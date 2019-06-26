@@ -35,6 +35,10 @@ const IssueSchema = new mongoose.Schema(
       type: String,
       ref: 'Project',
       required: false
+    },
+    status: {
+      type: Boolean,
+      default: true
     }
   },
   {

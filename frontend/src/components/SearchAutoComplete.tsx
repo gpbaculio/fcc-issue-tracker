@@ -24,9 +24,11 @@ const SearchAutoComplete = ({
           `<strong>${text}</strong>`
         );
         return (
-          <Link to={`/${project_name}`}>
-            <div key={i} dangerouslySetInnerHTML={{ __html: projectText }} />
-          </Link>
+          <Link
+            key={i}
+            to={`/${project_name}`}
+            dangerouslySetInnerHTML={{ __html: `<div>${projectText}</div>` }}
+          />
         );
       })}
       {loading && (

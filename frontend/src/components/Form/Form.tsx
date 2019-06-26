@@ -5,11 +5,21 @@ import axios from 'axios';
 import FormInput from './FormInput';
 
 export type reqMethodType = 'POST' | 'PUT' | 'DELETE';
+
 interface FormProps {
-  keys: FormKeys[];
+  fields: {
+    project_name?: string;
+    id?: string;
+    issue_title?: string;
+    issue_text?: string;
+    created_by?: string;
+    assigned_to?: string;
+    status_text?: string;
+  };
   title: string;
   route: string;
   type: reqMethodType;
+  disabledFields?: string[];
 }
 
 interface FormState {
@@ -33,7 +43,7 @@ export class FormComponent extends Component<FormProps, FormState> {
   private initialFields: {};
   constructor(props: FormProps) {
     super(props);
-    this.initialFields = Object.fromEntries(props.keys.map(key => [key, '']));
+    this.initialFields = { ...props.fields };
     this.state = {
       ...this.initialFields,
       loading: false,
@@ -80,7 +90,7 @@ export class FormComponent extends Component<FormProps, FormState> {
     this.setState({ alertVisible: false, error: false, message: '' });
   };
   render() {
-    const { title, keys, type, route } = this.props;
+    const { title, type, route, fields, disabledFields } = this.props;
     const { loading, alertVisible, message, error } = this.state;
     return (
       <Form onSubmit={this.handleSubmit} className='api-form w-75 p-3 mx-auto'>
@@ -93,11 +103,14 @@ export class FormComponent extends Component<FormProps, FormState> {
           toggle={this.closeAlert}>
           {message}
         </Alert>
-        {keys.map((k, i) => (
+        {Object.keys(fields).map((k, i) => (
           <FormInput
+            disable={
+              disabledFields != null ? disabledFields.includes(k) : false
+            }
             type={type}
             key={i}
-            stateKey={k}
+            stateKey={k as FormKeys}
             value={this.state[k] as string}
             handleChange={this.handleChange}
           />

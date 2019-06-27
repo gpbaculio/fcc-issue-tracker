@@ -59,22 +59,22 @@ class IssueController {
             const { project_name } = req.params;
             const query = Object.keys(params).reduce((q, key) => {
                 const param = params[key];
-                if (param)
+                if (param || typeof param === 'boolean')
                     q[key] = param;
                 return q;
             }, {});
+            console.log('query ', query);
             const project = yield Project_1.default.findOne({ project_name });
             if (!project)
                 res.status(404).send('Project does not exist');
-            Issue_1.default.findOneAndUpdate({ _id: id, project_name }, { $set: query }, { new: true }, (error, issue) => {
+            yield Issue_1.default.findOneAndUpdate({ _id: id, project_name }, { $set: query }, { new: true }, (error, issue) => {
+                console.log('asdasdsadasd', issue);
                 if (error)
                     res.status(404).send('Issue not found');
-                else {
-                    res.json({
-                        issue,
-                        message: `Successfully updated issue ${issue.issue_title}`
-                    });
-                }
+                res.json({
+                    issue,
+                    message: `Successfully updated issue ${issue.issue_title}`
+                });
             });
         });
         this.delete = (req, res) => __awaiter(this, void 0, void 0, function* () {

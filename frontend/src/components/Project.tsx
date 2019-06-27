@@ -4,6 +4,8 @@ import { RouteComponentProps } from 'react-router-dom';
 import { Alert, Row, Col, Button } from 'reactstrap';
 import Pagination from 'react-js-pagination';
 import { Form } from './Form';
+import Loader from './Loader';
+import Issue from './Issue';
 
 interface ProjectProps
   extends RouteComponentProps<{
@@ -14,6 +16,7 @@ interface ProjectState {
   message: '';
   alertVisible: boolean;
   count: number;
+  loading: boolean;
   activePage: number;
 }
 class Project extends Component<ProjectProps, ProjectState> {
@@ -22,6 +25,7 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.state = {
       issues: [],
       message: '',
+      loading: false,
       alertVisible: false,
       count: 0,
       activePage: 1
@@ -29,14 +33,19 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
   componentDidMount = async () => {
     try {
+      this.setState({ loading: true });
       const {
         data: { issues, count }
       } = await axios.get(
         `/api/issues/${this.props.match.params.project_name}`
       );
-      this.setState({ issues, count });
+      this.setState({ issues, count, loading: false });
     } catch (error) {
-      this.setState({ message: error.response.data, alertVisible: true });
+      this.setState({
+        message: error.response.data,
+        alertVisible: true,
+        loading: false
+      });
     }
   };
 
@@ -47,8 +56,16 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.setState({ activePage: pageNumber });
   };
   render() {
-    const { message, alertVisible, issues, activePage, count } = this.state;
+    const {
+      message,
+      alertVisible,
+      issues,
+      activePage,
+      count,
+      loading
+    } = this.state;
     const { project_name } = this.props.match.params;
+    if (loading) return <Loader />;
     return (
       <div className='w-100 d-flex flex-column align-items-center'>
         <h2 className='project-title my-3 p-3 w-100'>
@@ -77,46 +94,14 @@ class Project extends Component<ProjectProps, ProjectState> {
             title={'Submit Issue'}
           />
         </div>
-        <Row className='w-100'>
-          {issues.map(
-            (
-              {
-                project_name,
-                issue_title,
-                issue_text,
-                created_by,
-                assigned_to,
-                status_text,
-                status,
-                _id,
-                createdAt,
-                updatedAt
-              },
-              i
-            ) => {
-              return (
-                <Col key={i} xs='12'>
-                  <div className='w-50 project-container mx-auto d-flex flex-column align-items-center'>
-                    <div>id: {_id}</div>
-                    <div>
-                      <h4>{`${issue_title} - (${
-                        status ? 'open' : 'close'
-                      })`}</h4>
-                    </div>
-                    <div>{issue_text}</div>
-                    <div className='d-flex w-50 justify-content-between'>
-                      <div>cby {created_by}</div>
-                      <div>ato {assigned_to}</div>
-                    </div>
-                    <div className='d-flex w-50 justify-content-between'>
-                      <Button>close</Button>
-                      <Button>delete</Button>
-                    </div>
-                  </div>
-                </Col>
-              );
-            }
-          )}
+        <Row className='my-4 w-100'>
+          {issues.map((issue, i) => {
+            return (
+              <Col key={i} xs='12'>
+                <Issue project_name={project_name} {...issue} />
+              </Col>
+            );
+          })}
         </Row>
         <Pagination
           activePage={activePage}

@@ -64,6 +64,7 @@ class App {
             useNewUrlParser: true,
             useCreateIndex: true
         });
+        mongoose.set('useFindAndModify', false);
     }
 }
 exports.default = new App().app;

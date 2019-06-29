@@ -1,4 +1,9 @@
-import { FETCH_ISSUES_REQUEST } from './types';
+import {
+  FETCH_ISSUES_REQUEST,
+  FETCH_ISSUES_SUCCESS,
+  FETCH_ISSUES_FAILURE,
+  CLOSE_ALERT
+} from './types';
 
 export interface FetchIssuesArgsType {
   projectName: string;
@@ -21,6 +26,7 @@ export interface IssueType {
   createdAt: string;
   updatedAt: string;
   status: boolean;
+  loading: boolean;
 }
 
 export interface IssuesType {
@@ -33,26 +39,46 @@ export interface IssuesInitState {
   page: number;
   loading: boolean;
   count: number;
+  alert: {
+    message: string;
+    type: string;
+  };
+  error: boolean;
 }
-
-interface fetchIssuesRequest {
+export interface AlertType {
+  message: string;
+  type: string;
+}
+interface FetchIssuesRequestType {
   type: typeof FETCH_ISSUES_REQUEST;
 }
-// interface fetchTodosSuccess {
-//   type: typeof FETCH_TODOS_SUCCESS;
-//   payload: {
-//     entities: {
-//       [_id: string]: Todo;
-//     };
-//     ids: string[];
-//     count: number;
-//   };
-// }
-// interface fetchTodosFailure {
-//   type: typeof FETCH_TODOS_FAILURE;
-//   payload: {
-//     error: string;
-//   };
-// }
+interface FetchIssuesSuccessType {
+  type: typeof FETCH_ISSUES_SUCCESS;
+  payload: {
+    issues: {
+      [_id: string]: IssueType;
+    };
+    ids: string[];
+    count: number;
+  };
+}
+interface FetchIssuesFailureType {
+  type: typeof FETCH_ISSUES_FAILURE;
+  payload: {
+    error: true;
+    alert: { message: string; type: string };
+  };
+}
+interface CloseAlertType {
+  type: typeof CLOSE_ALERT;
+  payload: {
+    error: false;
+    alert: { message: string; type: string };
+  };
+}
 
-export type IssuesctionTypes = fetchIssuesRequest;
+export type IssuesActionTypes =
+  | FetchIssuesRequestType
+  | FetchIssuesSuccessType
+  | FetchIssuesFailureType
+  | CloseAlertType;

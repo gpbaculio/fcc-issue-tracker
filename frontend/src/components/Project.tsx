@@ -10,8 +10,12 @@ import Issue from './Issue';
 import { SubmitIssue } from './Forms';
 import { AppState } from '../store';
 
-import { fetchIssues } from '../store/issues/actions';
-import { IssueType, FetchIssuesArgsType } from '../store/issues/interfaces';
+import { fetchIssues, closeAlert } from '../store/issues/actions';
+import {
+  IssueType,
+  FetchIssuesArgsType,
+  AlertType
+} from '../store/issues/interfaces';
 
 interface ProjectProps
   extends RouteComponentProps<{
@@ -22,6 +26,10 @@ interface ProjectProps
   };
   ids: string[];
   fetchIssues: ({ page, projectName }: FetchIssuesArgsType) => void;
+  alert: AlertType;
+  error: boolean;
+  closeAlert: () => void;
+  loading: boolean;
 }
 interface ProjectState {
   message: '';
@@ -41,26 +49,11 @@ class Project extends Component<ProjectProps, ProjectState> {
       activePage: 1
     };
   }
-  componentDidMount = async () => {
-    try {
-      this.setState({ loading: true });
-      const {
-        data: { issues, count }
-      } = await axios.get(
-        `/api/issues/${this.props.match.params.project_name}`
-      );
-      this.props.fetchIssues({
-        page: 1,
-        projectName: this.props.match.params.project_name
-      });
-      this.setState({ count, loading: false });
-    } catch (error) {
-      this.setState({
-        message: error.response.data,
-        alertVisible: true,
-        loading: false
-      });
-    }
+  componentDidMount = () => {
+    this.props.fetchIssues({
+      page: 1,
+      projectName: this.props.match.params.project_name
+    });
   };
 
   closeAlert = () => {
@@ -70,21 +63,22 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.setState({ activePage: pageNumber });
   };
   render() {
-    const { message, alertVisible, activePage, count, loading } = this.state;
+    const { activePage, count } = this.state;
     const { project_name } = this.props.match.params;
+    const { issues, ids, alert, error, closeAlert, loading } = this.props;
     if (loading) return <Loader />;
-    const { issues, ids } = this.props;
     return (
       <div className='w-100 d-flex flex-column align-items-center'>
         <h2 className='project-title my-3 p-3 w-100'>
           All issues for: {project_name}
         </h2>
         <Alert
+          fade={false}
           className='mt-2'
-          color={'danger'}
-          isOpen={alertVisible}
-          toggle={this.closeAlert}>
-          {message}
+          color={alert.type}
+          isOpen={error}
+          toggle={closeAlert}>
+          {alert.message}
         </Alert>
         <div className='w-50 mt-4'>
           <SubmitIssue />
@@ -112,13 +106,19 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 }
 
-const mapStateToProps = ({ issues }: AppState) => ({
-  issues: issues.issues,
-  ids: issues.ids
+const mapStateToProps = ({
+  issues: { issues, ids, alert, error, loading }
+}: AppState) => ({
+  issues,
+  ids,
+  alert,
+  error,
+  loading
 });
 
 const mapDispatchToProps = {
-  fetchIssues
+  fetchIssues,
+  closeAlert
 };
 
 export default connect(

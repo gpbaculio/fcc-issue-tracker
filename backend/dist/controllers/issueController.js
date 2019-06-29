@@ -89,9 +89,11 @@ class IssueController {
         });
         this.getIssues = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { project_name, offset, limit } = req.params;
-            Project_1.default.findOne({ project_name }, (error, _project) => {
+            Project_1.default.findOne({ project_name }, (error, project) => {
                 if (error)
                     res.status(500).send(error.message);
+                if (!project)
+                    res.status(500).send('Project does not exist');
                 Issue_1.default.find({ project_name }, null, { skip: offset, limit }, (error, issues) => {
                     if (error)
                         res.status(500).send(error.message);

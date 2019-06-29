@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import { Route, BrowserRouter } from 'react-router-dom';
+
+import configStore from './store';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
@@ -9,10 +12,14 @@ import './pagination.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+const store = configStore();
+
 ReactDOM.render(
-  <BrowserRouter>
-    <Route path='/' component={App} />
-  </BrowserRouter>,
+  <Provider store={store}>
+    <BrowserRouter>
+      <Route path='/' component={App} />
+    </BrowserRouter>
+  </Provider>,
   document.getElementById('root')
 );
 

@@ -28,12 +28,10 @@ class IssueController {
             newIssue.save((error, issue) => {
                 if (error)
                     res.status(500).send(error.message);
-                else {
-                    res.json({
-                        issue,
-                        message: `Successfully submitted issue ${issue.issue_title}`
-                    });
-                }
+                res.json({
+                    issue,
+                    message: `Successfully submitted issue ${issue.issue_title}`
+                });
             });
         };
         this.create = (req, res) => __awaiter(this, void 0, void 0, function* () {
@@ -48,9 +46,7 @@ class IssueController {
                 newProject.save((error, _project) => {
                     if (error)
                         res.status(500).send(error.message);
-                    else {
-                        this.createIssue(res, params);
-                    }
+                    this.createIssue(res, params);
                 });
             }
         });
@@ -63,11 +59,10 @@ class IssueController {
                     q[key] = param;
                 return q;
             }, {});
-            console.log('query ', query);
             const project = yield Project_1.default.findOne({ project_name });
             if (!project)
                 res.status(404).send('Project does not exist');
-            yield Issue_1.default.findOneAndUpdate({ _id: id, project_name }, { $set: query }, { new: true }, (error, issue) => {
+            Issue_1.default.findOneAndUpdate({ _id: id, project_name }, { $set: query }, { new: true }, (error, issue) => {
                 console.log('asdasdsadasd', issue);
                 if (error)
                     res.status(404).send('Issue not found');
@@ -84,40 +79,29 @@ class IssueController {
             if (!project)
                 res.status(404).send('Project does not exist');
             Issue_1.default.findOneAndRemove({ _id: id, project_name }, (error, issue) => {
-                if (error) {
+                if (error)
                     res.status(404).send('Issue not found');
-                }
-                else {
-                    res.json({
-                        issue,
-                        message: `Successfully deleted issue ${issue.issue_title}`
-                    });
-                }
+                res.json({
+                    issue,
+                    message: `Successfully deleted issue ${issue.issue_title}`
+                });
             });
         });
         this.getIssues = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { project_name, offset, limit } = req.params;
-            const project = yield Project_1.default.findOne({ project_name });
-            if (project) {
-                Issue_1.default.find({ project_name }, null, { skip: offset || 0, limit: 5 }, (error, issues) => {
-                    if (error) {
+            Project_1.default.findOne({ project_name }, (error, _project) => {
+                if (error)
+                    res.status(500).send(error.message);
+                Issue_1.default.find({ project_name }, null, { skip: offset, limit }, (error, issues) => {
+                    if (error)
                         res.status(500).send(error.message);
-                    }
-                    else {
-                        Issue_1.default.countDocuments({ project_name }, (error, count) => {
-                            if (error) {
-                                res.status(500).send(error.message);
-                            }
-                            else {
-                                res.json({ issues, count });
-                            }
-                        });
-                    }
+                    Issue_1.default.countDocuments({ project_name }, (error, count) => {
+                        if (error)
+                            res.status(500).send(error.message);
+                        res.json({ issues, count });
+                    });
                 });
-            }
-            else {
-                res.status(500).send('Project does not exist');
-            }
+            });
         });
     }
 }

@@ -2,17 +2,28 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { RouteComponentProps } from 'react-router-dom';
 import { Alert, Row, Col, Button } from 'reactstrap';
+
+import { connect } from 'react-redux';
 import Pagination from 'react-js-pagination';
-import { Form } from './Form';
 import Loader from './Loader';
 import Issue from './Issue';
+import { SubmitIssue } from './Forms';
+import { AppState } from '../store';
+
+import { fetchIssues } from '../store/issues/actions';
+import { IssueType, FetchIssuesArgsType } from '../store/issues/interfaces';
 
 interface ProjectProps
   extends RouteComponentProps<{
     project_name: string;
-  }> {}
+  }> {
+  issues: {
+    [_id: string]: IssueType;
+  };
+  ids: string[];
+  fetchIssues: ({ page, projectName }: FetchIssuesArgsType) => void;
+}
 interface ProjectState {
-  issues: [];
   message: '';
   alertVisible: boolean;
   count: number;
@@ -23,7 +34,6 @@ class Project extends Component<ProjectProps, ProjectState> {
   constructor(props: ProjectProps) {
     super(props);
     this.state = {
-      issues: [],
       message: '',
       loading: false,
       alertVisible: false,
@@ -39,7 +49,11 @@ class Project extends Component<ProjectProps, ProjectState> {
       } = await axios.get(
         `/api/issues/${this.props.match.params.project_name}`
       );
-      this.setState({ issues, count, loading: false });
+      this.props.fetchIssues({
+        page: 1,
+        projectName: this.props.match.params.project_name
+      });
+      this.setState({ count, loading: false });
     } catch (error) {
       this.setState({
         message: error.response.data,
@@ -56,16 +70,10 @@ class Project extends Component<ProjectProps, ProjectState> {
     this.setState({ activePage: pageNumber });
   };
   render() {
-    const {
-      message,
-      alertVisible,
-      issues,
-      activePage,
-      count,
-      loading
-    } = this.state;
+    const { message, alertVisible, activePage, count, loading } = this.state;
     const { project_name } = this.props.match.params;
     if (loading) return <Loader />;
+    const { issues, ids } = this.props;
     return (
       <div className='w-100 d-flex flex-column align-items-center'>
         <h2 className='project-title my-3 p-3 w-100'>
@@ -79,29 +87,18 @@ class Project extends Component<ProjectProps, ProjectState> {
           {message}
         </Alert>
         <div className='w-50 mt-4'>
-          <Form
-            type={'POST'}
-            route={`/api/issues/${project_name}`}
-            fields={{
-              project_name,
-              issue_title: '',
-              issue_text: '',
-              created_by: '',
-              assigned_to: '',
-              status_text: ''
-            }}
-            disabledFields={['project_name']}
-            title={'Submit Issue'}
-          />
+          <SubmitIssue />
         </div>
         <Row className='my-4 w-100'>
-          {issues.map((issue, i) => {
-            return (
-              <Col key={i} xs='12'>
-                <Issue project_name={project_name} {...issue} />
-              </Col>
-            );
-          })}
+          {ids
+            .map(id => issues[id])
+            .map((issue, i) => {
+              return (
+                <Col key={i} xs='12'>
+                  <Issue project_name={project_name} {...issue} />
+                </Col>
+              );
+            })}
         </Row>
         <Pagination
           activePage={activePage}
@@ -115,4 +112,16 @@ class Project extends Component<ProjectProps, ProjectState> {
   }
 }
 
-export default Project;
+const mapStateToProps = ({ issues }: AppState) => ({
+  issues: issues.issues,
+  ids: issues.ids
+});
+
+const mapDispatchToProps = {
+  fetchIssues
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Project);

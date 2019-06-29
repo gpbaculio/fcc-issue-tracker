@@ -6,7 +6,7 @@ import FormInput from './FormInput';
 
 export type reqMethodType = 'POST' | 'PUT' | 'DELETE';
 
-interface FormProps {
+export interface FormProps {
   fields: {
     project_name?: string;
     id?: string;

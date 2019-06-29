@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col } from 'reactstrap';
 
 import { usageSamples, userStories, sampleReturn } from './constants';
-import { Form } from './Form';
+import { SubmitIssue, UpdateIssue, DeleteIssue } from './Forms';
 import SearchProject from './SearchProject';
 
 const Home = () => {
@@ -29,43 +29,13 @@ const Home = () => {
       </Row>
       <Row className='my-3'>
         <Col>
-          <Form
-            type={'POST'}
-            route={'/api/issues/:project_name'}
-            fields={{
-              project_name: '',
-              issue_title: '',
-              issue_text: '',
-              created_by: '',
-              assigned_to: '',
-              status_text: ''
-            }}
-            title={'Submit Issue'}
-          />
+          <SubmitIssue />
         </Col>
         <Col>
-          <Form
-            type={'PUT'}
-            route={'/api/issues/:project_name'}
-            fields={{
-              project_name: '',
-              id: '',
-              issue_title: '',
-              issue_text: '',
-              created_by: '',
-              assigned_to: '',
-              status_text: ''
-            }}
-            title={'Update Issue'}
-          />
+          <UpdateIssue />
         </Col>
         <Col>
-          <Form
-            type={'DELETE'}
-            route={'/api/issues/:project_name'}
-            fields={{ project_name: '', id: '' }}
-            title={'Submit Issue'}
-          />
+          <DeleteIssue />
         </Col>
       </Row>
     </React.Fragment>

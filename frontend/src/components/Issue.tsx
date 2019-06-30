@@ -19,7 +19,6 @@ interface IssueState {
 class Issue extends Component<IssueProps, IssueState> {
   constructor(props: IssueProps) {
     super(props);
-
     this.state = {
       status: props.status
     };
@@ -33,7 +32,6 @@ class Issue extends Component<IssueProps, IssueState> {
       url: `/api/issues/${project_name}`,
       data: { status: !status, id: _id }
     });
-    console.log('data ', data);
   };
   render() {
     const toDateString = (date: string) => new Date(date).toDateString();
@@ -48,7 +46,9 @@ class Issue extends Component<IssueProps, IssueState> {
       status
     } = this.props;
     return (
-      <div className='w-50 my-2 p-4 issue-container mx-auto d-flex flex-column align-items-center'>
+      <div
+        style={{ backgroundColor: status ? '#f5f5f5' : '#D3D3D3' }}
+        className='w-50 my-2 p-4 issue-container mx-auto d-flex flex-column align-items-center'>
         <div>
           <strong>id:</strong> {_id}
         </div>
@@ -74,7 +74,7 @@ class Issue extends Component<IssueProps, IssueState> {
           <Button
             onClick={this.handleStatus}
             color={status ? 'success' : 'danger'}>
-            close
+            {status ? 'Open' : 'Close'}
           </Button>
           <Button color='danger'>delete</Button>
         </div>

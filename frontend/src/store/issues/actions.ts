@@ -6,7 +6,7 @@ import axios from 'axios';
 import {
   FETCH_ISSUES_REQUEST,
   FETCH_ISSUES_SUCCESS,
-  FETCH_ISSUES_FAILURE,
+  REQUEST_FAILURE,
   CLOSE_ALERT
 } from './types';
 import {
@@ -50,7 +50,7 @@ export const fetchIssues = ({
     });
   } catch (error) {
     dispatch({
-      type: FETCH_ISSUES_FAILURE,
+      type: REQUEST_FAILURE,
       payload: {
         error: true,
         alert: { message: error.response.data, type: 'danger' }

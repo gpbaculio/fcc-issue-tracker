@@ -25,8 +25,8 @@ const FormInput = ({
 }: FormInputProps) => {
   const placeholder = placeHolders[stateKey];
   return (
-    <FormGroup className='mb-1'>
-      <Label className='mb-1 col-form-label-sm' for={stateKey}>
+    <FormGroup>
+      <Label className='col-form-label-sm' for={stateKey}>
         {capitalize(removeUnderscore(stateKey))}
       </Label>
       <Input

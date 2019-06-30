@@ -1,8 +1,8 @@
 import {
   FETCH_ISSUES_REQUEST,
   FETCH_ISSUES_SUCCESS,
-  FETCH_ISSUES_FAILURE,
-  CLOSE_ALERT
+  CLOSE_ALERT,
+  REQUEST_FAILURE
 } from './types';
 import { IssuesInitState, IssuesActionTypes, AlertType } from './interfaces';
 
@@ -35,7 +35,7 @@ export default (state = initState, action: IssuesActionTypes) => {
         count
       };
     }
-    case FETCH_ISSUES_FAILURE: {
+    case REQUEST_FAILURE: {
       const {
         error,
         alert: { message, type }

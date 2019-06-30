@@ -83,7 +83,7 @@ class Project extends Component<ProjectProps, ProjectState> {
         <div className='w-50 mt-4'>
           <SubmitIssue />
         </div>
-        <Row className='my-4 w-100'>
+        <Row className='issues-row pt-4 my-4 w-100'>
           {ids
             .map(id => issues[id])
             .map((issue, i) => {

@@ -1,8 +1,10 @@
 import {
   FETCH_ISSUES_REQUEST,
   FETCH_ISSUES_SUCCESS,
-  FETCH_ISSUES_FAILURE,
-  CLOSE_ALERT
+  CLOSE_ALERT,
+  TOGGLE_ISSUE_REQUEST,
+  TOGGLE_ISSUE_SUCCESS,
+  REQUEST_FAILURE
 } from './types';
 
 export interface FetchIssuesArgsType {
@@ -62,8 +64,8 @@ interface FetchIssuesSuccessType {
     count: number;
   };
 }
-interface FetchIssuesFailureType {
-  type: typeof FETCH_ISSUES_FAILURE;
+interface RequestFailureType {
+  type: typeof REQUEST_FAILURE;
   payload: {
     error: true;
     alert: { message: string; type: string };
@@ -76,9 +78,19 @@ interface CloseAlertType {
     alert: { message: string; type: string };
   };
 }
-
+interface ToggleIssueRequestType {
+  type: typeof TOGGLE_ISSUE_REQUEST;
+}
+interface ToggleIssueSuccesstType {
+  type: typeof TOGGLE_ISSUE_SUCCESS;
+  payload: {
+    issue: IssueType;
+  };
+}
 export type IssuesActionTypes =
   | FetchIssuesRequestType
   | FetchIssuesSuccessType
-  | FetchIssuesFailureType
-  | CloseAlertType;
+  | RequestFailureType
+  | CloseAlertType
+  | ToggleIssueRequestType
+  | ToggleIssueSuccesstType;

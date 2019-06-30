@@ -74,7 +74,6 @@ class Project extends Component<ProjectProps, ProjectState> {
       count,
       page
     } = this.props;
-    if (loading) return <Loader />;
     return (
       <div className='w-100 d-flex flex-column align-items-center'>
         <h2 className='project-title my-3 p-3 w-100'>
@@ -105,6 +104,7 @@ class Project extends Component<ProjectProps, ProjectState> {
           />
         </div>
         <Row className='issues-row pt-4 my-4 w-100'>
+          {loading && <Loader />}
           {ids
             .map(id => issues[id])
             .map((issue, i) => {

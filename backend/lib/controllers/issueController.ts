@@ -50,8 +50,7 @@ export default class IssueController {
       { $set: query },
       { new: true },
       (error, issue) => {
-        console.log('asdasdsadasd', issue);
-        if (error) res.status(404).send('Issue not found');
+        if (error) res.status(404).send(error.message);
         res.json({
           issue,
           message: `Successfully updated issue ${issue.issue_title}`

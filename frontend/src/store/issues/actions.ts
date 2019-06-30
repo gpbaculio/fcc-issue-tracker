@@ -7,12 +7,15 @@ import {
   FETCH_ISSUES_REQUEST,
   FETCH_ISSUES_SUCCESS,
   REQUEST_FAILURE,
-  CLOSE_ALERT
+  CLOSE_ALERT,
+  TOGGLE_ISSUE_REQUEST,
+  TOGGLE_ISSUE_SUCCESS
 } from './types';
 import {
   FetchIssuesArgsType,
   FetchIssuesParamsType,
-  IssueType
+  IssueType,
+  ToggleIssueArgsType
 } from './interfaces';
 import { initAlert } from './reducers';
 
@@ -72,4 +75,36 @@ export const closeAlert = (): ThunkAction<
       alert: initAlert
     }
   });
+};
+
+export const toggleIssueStatus = ({
+  id,
+  projectName,
+  status
+}: ToggleIssueArgsType): ThunkAction<
+  void,
+  AppState,
+  void,
+  AnyAction
+> => async dispatch => {
+  dispatch({ type: TOGGLE_ISSUE_REQUEST, payload: { id } });
+  try {
+    const {
+      data: { issue }
+    } = await axios({
+      method: 'PUT',
+      url: `/api/issues/${projectName}`,
+      data: { status, id }
+    });
+
+    dispatch({ type: TOGGLE_ISSUE_SUCCESS, payload: { issue } });
+  } catch (error) {
+    dispatch({
+      type: REQUEST_FAILURE,
+      payload: {
+        error: true,
+        alert: { message: error.response.data, type: 'danger' }
+      }
+    });
+  }
 };

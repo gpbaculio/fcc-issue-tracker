@@ -2,7 +2,9 @@ import {
   FETCH_ISSUES_REQUEST,
   FETCH_ISSUES_SUCCESS,
   CLOSE_ALERT,
-  REQUEST_FAILURE
+  REQUEST_FAILURE,
+  TOGGLE_ISSUE_REQUEST,
+  TOGGLE_ISSUE_SUCCESS
 } from './types';
 import { IssuesInitState, IssuesActionTypes, AlertType } from './interfaces';
 
@@ -61,6 +63,32 @@ export default (state = initState, action: IssuesActionTypes) => {
         alert: {
           message,
           type
+        }
+      };
+    }
+    case TOGGLE_ISSUE_REQUEST: {
+      const { id } = action.payload;
+      const issue = state.issues[id];
+      return {
+        ...state,
+        issues: {
+          ...state.issues,
+          [id]: {
+            ...issue,
+            loading: true
+          }
+        }
+      };
+    }
+    case TOGGLE_ISSUE_SUCCESS: {
+      const { issue } = action.payload;
+      return {
+        ...state,
+        issues: {
+          ...state.issues,
+          [issue._id]: {
+            ...issue
+          }
         }
       };
     }

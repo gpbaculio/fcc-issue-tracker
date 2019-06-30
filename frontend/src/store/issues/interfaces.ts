@@ -34,7 +34,11 @@ export interface IssueType {
 export interface IssuesType {
   [_id: string]: IssueType;
 }
-
+export interface ToggleIssueArgsType {
+  id: string;
+  projectName: string;
+  status: boolean;
+}
 export interface IssuesInitState {
   ids: string[];
   issues: IssuesType;
@@ -80,6 +84,9 @@ interface CloseAlertType {
 }
 interface ToggleIssueRequestType {
   type: typeof TOGGLE_ISSUE_REQUEST;
+  payload: {
+    id: string;
+  };
 }
 interface ToggleIssueSuccesstType {
   type: typeof TOGGLE_ISSUE_SUCCESS;

@@ -1,40 +1,18 @@
 import React, { Component } from 'react';
-import { Button } from 'reactstrap';
-import axios from 'axios';
+import { Button, Spinner } from 'reactstrap';
+import { IssueType, ToggleIssueArgsType } from '../store/issues/interfaces';
+import { toDateString } from './utils';
+import { AppState } from '../store';
+import { connect } from 'react-redux';
+import { toggleIssueStatus } from '../store/issues/actions';
 
-interface IssueProps {
-  _id: string;
-  issue_title: string;
-  issue_text: string;
-  created_by: string;
-  assigned_to: string;
-  createdAt: string;
-  updatedAt: string;
-  status: boolean;
+interface IssueProps extends IssueType {
+  toggleIssueStatus: ({ id, projectName, status }: ToggleIssueArgsType) => void;
   project_name: string;
 }
-interface IssueState {
-  status: boolean;
-}
-class Issue extends Component<IssueProps, IssueState> {
-  constructor(props: IssueProps) {
-    super(props);
-    this.state = {
-      status: props.status
-    };
-  }
 
-  handleStatus = async () => {
-    const { project_name, _id } = this.props;
-    const { status } = this.state;
-    const { data } = await axios({
-      method: 'PUT',
-      url: `/api/issues/${project_name}`,
-      data: { status: !status, id: _id }
-    });
-  };
+class Issue extends Component<IssueProps> {
   render() {
-    const toDateString = (date: string) => new Date(date).toDateString();
     const {
       _id,
       issue_title,
@@ -43,7 +21,10 @@ class Issue extends Component<IssueProps, IssueState> {
       assigned_to,
       createdAt,
       updatedAt,
-      status
+      status,
+      loading,
+      toggleIssueStatus,
+      project_name
     } = this.props;
     return (
       <div
@@ -72,8 +53,16 @@ class Issue extends Component<IssueProps, IssueState> {
         </div>
         <div className='mt-2 d-flex w-50 justify-content-around'>
           <Button
-            onClick={this.handleStatus}
+            disabled={loading}
+            onClick={() =>
+              toggleIssueStatus({
+                id: _id,
+                projectName: project_name,
+                status: !status
+              })
+            }
             color={status ? 'success' : 'danger'}>
+            {loading && <Spinner size='sm' color='light' />}
             {status ? 'Open' : 'Close'}
           </Button>
           <Button color='danger'>delete</Button>
@@ -83,4 +72,11 @@ class Issue extends Component<IssueProps, IssueState> {
   }
 }
 
-export default Issue;
+const mapDispatchToProps = {
+  toggleIssueStatus
+};
+
+export default connect(
+  null,
+  mapDispatchToProps
+)(Issue);

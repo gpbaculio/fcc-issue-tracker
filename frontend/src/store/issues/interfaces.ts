@@ -66,6 +66,7 @@ interface FetchIssuesSuccessType {
     };
     ids: string[];
     count: number;
+    page: number;
   };
 }
 interface RequestFailureType {

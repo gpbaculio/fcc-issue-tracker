@@ -16,6 +16,7 @@ import {
   FetchIssuesArgsType,
   AlertType
 } from '../store/issues/interfaces';
+import { Form } from './Form';
 
 interface ProjectProps
   extends RouteComponentProps<{
@@ -29,43 +30,50 @@ interface ProjectProps
   alert: AlertType;
   error: boolean;
   closeAlert: () => void;
-  loading: boolean;
-}
-interface ProjectState {
-  message: '';
-  alertVisible: boolean;
   count: number;
   loading: boolean;
-  activePage: number;
+  page: number;
+}
+interface ProjectState {
+  alertVisible: boolean;
 }
 class Project extends Component<ProjectProps, ProjectState> {
   constructor(props: ProjectProps) {
     super(props);
     this.state = {
-      message: '',
-      loading: false,
-      alertVisible: false,
-      count: 0,
-      activePage: 1
+      alertVisible: false
     };
   }
-  componentDidMount = () => {
+  fetchIssues = ({ page, projectName }: FetchIssuesArgsType) => {
     this.props.fetchIssues({
+      page,
+      projectName
+    });
+  };
+  componentDidMount = () => {
+    this.fetchIssues({
       page: 1,
       projectName: this.props.match.params.project_name
     });
   };
-
-  closeAlert = () => {
-    this.setState({ alertVisible: false, message: '' });
-  };
-  handlePageChange = (pageNumber: number) => {
-    this.setState({ activePage: pageNumber });
+  handlePageChange = async (page: number) => {
+    this.fetchIssues({
+      page,
+      projectName: this.props.match.params.project_name
+    });
   };
   render() {
-    const { activePage, count } = this.state;
     const { project_name } = this.props.match.params;
-    const { issues, ids, alert, error, closeAlert, loading } = this.props;
+    const {
+      issues,
+      ids,
+      alert,
+      error,
+      closeAlert,
+      loading,
+      count,
+      page
+    } = this.props;
     if (loading) return <Loader />;
     return (
       <div className='w-100 d-flex flex-column align-items-center'>
@@ -81,7 +89,20 @@ class Project extends Component<ProjectProps, ProjectState> {
           {alert.message}
         </Alert>
         <div className='w-50 mt-4'>
-          <SubmitIssue />
+          <Form
+            type={'POST'}
+            route={`/api/issues/${project_name}`}
+            fields={{
+              project_name,
+              issue_title: '',
+              issue_text: '',
+              created_by: '',
+              assigned_to: '',
+              status_text: ''
+            }}
+            title={'Submit Issue'}
+            disabledFields={['project_name']}
+          />
         </div>
         <Row className='issues-row pt-4 my-4 w-100'>
           {ids
@@ -95,10 +116,10 @@ class Project extends Component<ProjectProps, ProjectState> {
             })}
         </Row>
         <Pagination
-          activePage={activePage}
+          activePage={page}
           itemsCountPerPage={5}
           totalItemsCount={count}
-          pageRangeDisplayed={3}
+          pageRangeDisplayed={5}
           onChange={this.handlePageChange}
         />
       </div>
@@ -107,13 +128,15 @@ class Project extends Component<ProjectProps, ProjectState> {
 }
 
 const mapStateToProps = ({
-  issues: { issues, ids, alert, error, loading }
+  issues: { issues, ids, alert, error, loading, count, page }
 }: AppState) => ({
   issues,
   ids,
   alert,
   error,
-  loading
+  loading,
+  page,
+  count
 });
 
 const mapDispatchToProps = {

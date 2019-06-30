@@ -32,8 +32,9 @@ export const fetchIssues = ({
 > => async dispatch => {
   dispatch({ type: FETCH_ISSUES_REQUEST });
   try {
-    const offset = (page - 1) * 9;
-    const params: FetchIssuesParamsType = { offset, limit: 5 };
+    const limit = 5;
+    const offset = (page - 1) * limit;
+    const params: FetchIssuesParamsType = { offset, limit };
     const { data } = await axios.get(`/api/issues/${projectName}`, {
       params
     });
@@ -49,7 +50,7 @@ export const fetchIssues = ({
     );
     dispatch({
       type: FETCH_ISSUES_SUCCESS,
-      payload: { ids, issues, count: data.count }
+      payload: { ids, issues, count: data.count, page }
     });
   } catch (error) {
     dispatch({

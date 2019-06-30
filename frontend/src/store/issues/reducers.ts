@@ -28,13 +28,14 @@ export default (state = initState, action: IssuesActionTypes) => {
         loading: true
       };
     case FETCH_ISSUES_SUCCESS: {
-      const { ids, issues, count } = action.payload;
+      const { ids, issues, count, page } = action.payload;
       return {
         ...state,
         loading: false,
         ids,
         issues,
-        count
+        count,
+        page
       };
     }
     case REQUEST_FAILURE: {

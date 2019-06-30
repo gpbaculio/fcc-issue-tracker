@@ -72,14 +72,15 @@ export default class IssueController {
     });
   };
   public getIssues = async (req: Request, res: Response) => {
-    const { project_name, offset, limit } = req.params;
+    const { project_name } = req.params;
+    const { offset, limit } = req.query;
     Project.findOne({ project_name }, (error, project) => {
       if (error) res.status(500).send(error.message);
       if (!project) res.status(500).send('Project does not exist');
       Issue.find(
         { project_name },
         null,
-        { skip: offset, limit },
+        { skip: parseInt(offset), limit: parseInt(limit) },
         (error, issues) => {
           if (error) res.status(500).send(error.message);
           Issue.countDocuments({ project_name }, (error, count) => {

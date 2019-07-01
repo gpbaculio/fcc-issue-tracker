@@ -9,13 +9,19 @@ import {
   REQUEST_FAILURE,
   CLOSE_ALERT,
   TOGGLE_ISSUE_REQUEST,
-  TOGGLE_ISSUE_SUCCESS
+  TOGGLE_ISSUE_SUCCESS,
+  DELETE_ISSUE_SUCCESS,
+  DELETE_ISSUE_REQUEST,
+  UPDATE_ISSUE_REQUEST,
+  UPDATE_ISSUE_SUCCESS
 } from './types';
 import {
   FetchIssuesArgsType,
   FetchIssuesParamsType,
   IssueType,
-  ToggleIssueArgsType
+  ToggleIssueArgsType,
+  DeleteIssueArgs,
+  UpdateIssueArgs
 } from './interfaces';
 import { initAlert } from './reducers';
 
@@ -44,7 +50,7 @@ export const fetchIssues = ({
     } = normalize(
       data.issues.map((issue: IssueType) => ({
         ...issue,
-        loading: false
+        loading: ''
       })),
       [issue]
     );
@@ -88,7 +94,10 @@ export const toggleIssueStatus = ({
   void,
   AnyAction
 > => async dispatch => {
-  dispatch({ type: TOGGLE_ISSUE_REQUEST, payload: { id } });
+  dispatch({
+    type: TOGGLE_ISSUE_REQUEST,
+    payload: { id, loading: 'toggleStatus' }
+  });
   try {
     const {
       data: { issue }
@@ -97,9 +106,73 @@ export const toggleIssueStatus = ({
       url: `/api/issues/${projectName}`,
       data: { status, id }
     });
-
     dispatch({ type: TOGGLE_ISSUE_SUCCESS, payload: { issue } });
   } catch (error) {
+    dispatch({
+      type: REQUEST_FAILURE,
+      payload: {
+        error: true,
+        alert: { message: error.response.data, type: 'danger' }
+      }
+    });
+  }
+};
+
+export const deleteIssue = ({
+  id,
+  projectName
+}: DeleteIssueArgs): ThunkAction<
+  void,
+  AppState,
+  void,
+  AnyAction
+> => async dispatch => {
+  dispatch({ type: DELETE_ISSUE_REQUEST, payload: { id } });
+  try {
+    const {
+      data: { issue }
+    } = await axios({
+      method: 'DELETE',
+      url: `/api/issues/${projectName}`,
+      data: { id }
+    });
+    dispatch({ type: DELETE_ISSUE_SUCCESS, payload: { id: issue._id } });
+  } catch (error) {
+    dispatch({
+      type: REQUEST_FAILURE,
+      payload: {
+        error: true,
+        alert: { message: error.response.data, type: 'danger' }
+      }
+    });
+  }
+};
+
+export const updateIssue = ({
+  id,
+  projectName,
+  ...params
+}: UpdateIssueArgs): ThunkAction<
+  void,
+  AppState,
+  void,
+  AnyAction
+> => async dispatch => {
+  dispatch({
+    type: UPDATE_ISSUE_REQUEST,
+    payload: { id, loading: 'updateIssue' }
+  });
+  try {
+    const {
+      data: { issue }
+    } = await axios({
+      method: 'PUT',
+      url: `/api/issues/${projectName}`,
+      data: { ...params, id }
+    });
+    dispatch({ type: UPDATE_ISSUE_SUCCESS, payload: { issue } });
+  } catch (error) {
+    console.log('error ', error);
     dispatch({
       type: REQUEST_FAILURE,
       payload: {

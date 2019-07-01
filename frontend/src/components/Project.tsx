@@ -1,13 +1,11 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import { RouteComponentProps } from 'react-router-dom';
-import { Alert, Row, Col, Button } from 'reactstrap';
+import { Alert, Row, Col } from 'reactstrap';
 
 import { connect } from 'react-redux';
 import Pagination from 'react-js-pagination';
 import Loader from './Loader';
 import Issue from './Issue';
-import { SubmitIssue } from './Forms';
 import { AppState } from '../store';
 
 import { fetchIssues, closeAlert } from '../store/issues/actions';
@@ -31,7 +29,7 @@ interface ProjectProps
   error: boolean;
   closeAlert: () => void;
   count: number;
-  loading: boolean;
+  loading: string | null;
   page: number;
 }
 interface ProjectState {
@@ -104,7 +102,7 @@ class Project extends Component<ProjectProps, ProjectState> {
           />
         </div>
         <Row className='issues-row pt-4 my-4 w-100'>
-          {loading && <Loader />}
+          {loading === 'fetchIssues' && <Loader />}
           {ids
             .map(id => issues[id])
             .map((issue, i) => {

@@ -4,17 +4,22 @@ import {
   CLOSE_ALERT,
   REQUEST_FAILURE,
   TOGGLE_ISSUE_REQUEST,
-  TOGGLE_ISSUE_SUCCESS
+  TOGGLE_ISSUE_SUCCESS,
+  DELETE_ISSUE_SUCCESS,
+  DELETE_ISSUE_REQUEST,
+  UPDATE_ISSUE_REQUEST,
+  UPDATE_ISSUE_SUCCESS
 } from './types';
 import { IssuesInitState, IssuesActionTypes, AlertType } from './interfaces';
 
 export const initAlert: AlertType = { message: '', type: '' };
 
 export const initState: IssuesInitState = {
+  editField: '',
   ids: [],
   issues: {},
   page: 1,
-  loading: false,
+  loading: null,
   count: 0,
   alert: initAlert,
   error: false
@@ -25,13 +30,13 @@ export default (state = initState, action: IssuesActionTypes) => {
     case FETCH_ISSUES_REQUEST:
       return {
         ...state,
-        loading: true
+        loading: 'fetchIssues'
       };
     case FETCH_ISSUES_SUCCESS: {
       const { ids, issues, count, page } = action.payload;
       return {
         ...state,
-        loading: false,
+        loading: null,
         ids,
         issues,
         count,
@@ -45,7 +50,7 @@ export default (state = initState, action: IssuesActionTypes) => {
       } = action.payload;
       return {
         ...state,
-        loading: false,
+        loading: null,
         error,
         alert: {
           message,
@@ -67,7 +72,37 @@ export default (state = initState, action: IssuesActionTypes) => {
         }
       };
     }
-    case TOGGLE_ISSUE_REQUEST: {
+    case TOGGLE_ISSUE_REQUEST:
+    case UPDATE_ISSUE_REQUEST: {
+      const { id, loading } = action.payload;
+      const issue = state.issues[id];
+      return {
+        ...state,
+        issues: {
+          ...state.issues,
+          [id]: {
+            ...issue,
+            loading
+          }
+        }
+      };
+    }
+    case TOGGLE_ISSUE_SUCCESS:
+    case UPDATE_ISSUE_SUCCESS: {
+      const { issue } = action.payload;
+      console.log('update issue ', issue);
+      return {
+        ...state,
+        issues: {
+          ...state.issues,
+          [issue._id]: {
+            ...issue,
+            loading: null
+          }
+        }
+      };
+    }
+    case DELETE_ISSUE_REQUEST: {
       const { id } = action.payload;
       const issue = state.issues[id];
       return {
@@ -76,21 +111,21 @@ export default (state = initState, action: IssuesActionTypes) => {
           ...state.issues,
           [id]: {
             ...issue,
-            loading: true
+            loading: 'deleteIssue'
           }
         }
       };
     }
-    case TOGGLE_ISSUE_SUCCESS: {
-      const { issue } = action.payload;
+    case DELETE_ISSUE_SUCCESS: {
+      const { id } = action.payload;
+      const { [id]: issueId, ...issues } = state.issues;
+      const ids = Object.keys(issues);
+      const count = state.count - 1;
       return {
         ...state,
-        issues: {
-          ...state.issues,
-          [issue._id]: {
-            ...issue
-          }
-        }
+        issues,
+        count,
+        ids
       };
     }
     default:

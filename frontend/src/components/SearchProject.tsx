@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Form, Input, FormGroup, Label } from 'reactstrap';
 import axios from 'axios';
 import SearchAutoComplete from './SearchAutoComplete';
-import Loader from './Loader';
 
 interface SearchProjectProps {}
 interface SearchProjectState {

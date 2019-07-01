@@ -35,29 +35,6 @@ export default class IssueController {
     }
   };
 
-  public update = async (req: Request, res: Response) => {
-    const { id, ...params } = req.body;
-    const { project_name } = req.params;
-    const query = Object.keys(params).reduce((q, key) => {
-      const param = params[key];
-      if (param || typeof param === 'boolean') q[key] = param;
-      return q;
-    }, {});
-    const project = await Project.findOne({ project_name });
-    if (!project) res.status(404).send('Project does not exist');
-    Issue.findOneAndUpdate(
-      { _id: id, project_name },
-      { $set: query },
-      { new: true },
-      (error, issue) => {
-        if (error) res.status(404).send(error.message);
-        res.json({
-          issue,
-          message: `Successfully updated issue ${issue.issue_title}`
-        });
-      }
-    );
-  };
   public delete = async (req: Request, res: Response) => {
     const { project_name } = req.params;
     const { id } = req.body;
@@ -75,17 +52,43 @@ export default class IssueController {
     const { project_name } = req.params;
     const { offset, limit } = req.query;
     Project.findOne({ project_name }, (error, project) => {
-      if (error) res.status(500).send(error.message);
-      if (!project) res.status(500).send('Project does not exist');
+      if (error) return res.status(500).send(error.message);
+      if (!project) return res.status(500).send('Project does not exist');
       Issue.find(
         { project_name },
         null,
         { skip: parseInt(offset), limit: parseInt(limit) },
         (error, issues) => {
-          if (error) res.status(500).send(error.message);
+          if (error) return res.status(500).send(error.message);
           Issue.countDocuments({ project_name }, (error, count) => {
-            if (error) res.status(500).send(error.message);
+            if (error) return res.status(500).send(error.message);
             res.json({ issues, count });
+          });
+        }
+      );
+    });
+  };
+
+  public update = async (req: Request, res: Response) => {
+    const { id, ...params } = req.body;
+    const { project_name } = req.params;
+    const query = Object.keys(params).reduce((q, key) => {
+      const param = params[key];
+      if (param || typeof param === 'boolean') q[key] = param;
+      return q;
+    }, {});
+    Project.findOne({ project_name }, (error, project) => {
+      if (error) return res.status(500).send(error.message);
+      if (!project) return res.status(500).send('Project does not exist');
+      Issue.findOneAndUpdate(
+        { _id: id, project_name },
+        { $set: query },
+        { new: true },
+        (error, issue) => {
+          if (error) return res.status(404).send(error.message);
+          res.json({
+            issue,
+            message: `Successfully updated issue ${issue.issue_title}`
           });
         }
       );

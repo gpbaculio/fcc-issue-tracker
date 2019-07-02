@@ -19,14 +19,10 @@ class App {
         this.issueRoutes = new issueRoutes_1.default();
         this.projectRoutes = new projectRoutes_1.default();
         this.fccTestingRoute = new fcc_testing_1.default();
+        this.mongoSetup();
         this.app.use(helmet());
         this.app.use(helmet.noSniff());
         this.app.use(helmet.xssFilter());
-        this.app.use(helmet.contentSecurityPolicy({
-            directives: {
-                defaultSrc: ["'self'"]
-            }
-        }));
         this.app.use(cors({ optionSuccessStatus: 200, origin: '*' }));
         // secure cookies with express-session
         const sessionConfig = {
@@ -40,7 +36,6 @@ class App {
         this.app.use(bodyParser.urlencoded({
             extended: true
         }));
-        this.mongoSetup();
         if (process.env.NODE_ENV === 'production') {
             this.app.set('trust proxy', 1); // trust first proxy
             sessionConfig.cookie.secure = true; // serve secure cookies

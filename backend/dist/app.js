@@ -31,7 +31,7 @@ class App {
             resave: true,
             saveUninitialized: true
         };
-        if (process.env.NODE_ENV === 'production') {
+        if (process.env.NODE_ENV === 'test') {
             this.app.set('trust proxy', 1); // trust first proxy
             sessionConfig.cookie.secure = true; // serve secure cookies
             // Serve any static files

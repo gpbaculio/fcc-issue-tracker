@@ -27,7 +27,7 @@ class IssueController {
             const newIssue = new Issue_1.default(params);
             newIssue.save((error, issue) => {
                 if (error)
-                    res.status(500).send(error.message);
+                    return res.status(500).send(error.message);
                 res.json({
                     issue,
                     message: `Successfully submitted issue ${issue.issue_title}`
@@ -45,7 +45,7 @@ class IssueController {
                 const newProject = new Project_1.default({ project_name });
                 newProject.save((error, _project) => {
                     if (error)
-                        res.status(500).send(error.message);
+                        return res.status(500).send(error.message);
                     this.createIssue(res, params);
                 });
             }
@@ -55,10 +55,10 @@ class IssueController {
             const { id } = req.body;
             const project = yield Project_1.default.findOne({ project_name });
             if (!project)
-                res.status(404).send('Project does not exist');
+                return res.status(404).send('Project does not exist');
             Issue_1.default.findOneAndRemove({ _id: id, project_name }, (error, issue) => {
                 if (error)
-                    res.status(404).send('Issue not found');
+                    return res.status(404).send('Issue not found');
                 res.json({
                     issue,
                     message: `Successfully deleted issue ${issue.issue_title}`
@@ -67,16 +67,25 @@ class IssueController {
         });
         this.getIssues = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const { project_name } = req.params;
-            const { offset, limit } = req.query;
+            const _a = req.query, { offset, limit } = _a, params = __rest(_a, ["offset", "limit"]);
+            const query = Object.keys(params).reduce((q, key) => {
+                const param = params[key];
+                if (key === 'open')
+                    q['status'] = Boolean(param);
+                else
+                    q[key] = param;
+                return q;
+            }, { project_name });
+            console.log('query ', query);
             Project_1.default.findOne({ project_name }, (error, project) => {
                 if (error)
                     return res.status(500).send(error.message);
                 if (!project)
                     return res.status(500).send('Project does not exist');
-                Issue_1.default.find({ project_name }, null, { skip: parseInt(offset), limit: parseInt(limit) }, (error, issues) => {
+                Issue_1.default.find(query, null, { skip: parseInt(offset), limit: parseInt(limit) }, (error, issues) => {
                     if (error)
                         return res.status(500).send(error.message);
-                    Issue_1.default.countDocuments({ project_name }, (error, count) => {
+                    Issue_1.default.countDocuments(query, (error, count) => {
                         if (error)
                             return res.status(500).send(error.message);
                         res.json({ issues, count });
@@ -85,7 +94,7 @@ class IssueController {
             });
         });
         this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const _a = req.body, { id } = _a, params = __rest(_a, ["id"]);
+            const _b = req.body, { id } = _b, params = __rest(_b, ["id"]);
             const { project_name } = req.params;
             const query = Object.keys(params).reduce((q, key) => {
                 const param = params[key];

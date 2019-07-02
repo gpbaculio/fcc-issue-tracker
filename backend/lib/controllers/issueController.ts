@@ -13,7 +13,7 @@ export default class IssueController {
   private createIssue = (res, params) => {
     const newIssue = new Issue(params);
     newIssue.save((error, issue) => {
-      if (error) res.status(500).send(error.message);
+      if (error) return res.status(500).send(error.message);
       res.json({
         issue,
         message: `Successfully submitted issue ${issue.issue_title}`
@@ -29,19 +29,18 @@ export default class IssueController {
     } else {
       const newProject = new Project({ project_name });
       newProject.save((error, _project) => {
-        if (error) res.status(500).send(error.message);
+        if (error) return res.status(500).send(error.message);
         this.createIssue(res, params);
       });
     }
   };
-
   public delete = async (req: Request, res: Response) => {
     const { project_name } = req.params;
     const { id } = req.body;
     const project = await Project.findOne({ project_name });
-    if (!project) res.status(404).send('Project does not exist');
+    if (!project) return res.status(404).send('Project does not exist');
     Issue.findOneAndRemove({ _id: id, project_name }, (error, issue) => {
-      if (error) res.status(404).send('Issue not found');
+      if (error) return res.status(404).send('Issue not found');
       res.json({
         issue,
         message: `Successfully deleted issue ${issue.issue_title}`
@@ -50,17 +49,27 @@ export default class IssueController {
   };
   public getIssues = async (req: Request, res: Response) => {
     const { project_name } = req.params;
-    const { offset, limit } = req.query;
+    const { offset, limit, ...params } = req.query;
+    const query = Object.keys(params).reduce(
+      (q, key) => {
+        const param = params[key];
+        if (key === 'open') q['status'] = Boolean(param);
+        else q[key] = param;
+        return q;
+      },
+      { project_name }
+    );
+    console.log('query ', query);
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project does not exist');
       Issue.find(
-        { project_name },
+        query,
         null,
         { skip: parseInt(offset), limit: parseInt(limit) },
         (error, issues) => {
           if (error) return res.status(500).send(error.message);
-          Issue.countDocuments({ project_name }, (error, count) => {
+          Issue.countDocuments(query, (error, count) => {
             if (error) return res.status(500).send(error.message);
             res.json({ issues, count });
           });

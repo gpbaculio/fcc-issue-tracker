@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 import { Alert, Row, Col } from 'reactstrap';
+import queryString from 'query-string';
 
 import { connect } from 'react-redux';
 import Pagination from 'react-js-pagination';
@@ -19,6 +20,7 @@ import { Form } from './Form';
 interface ProjectProps
   extends RouteComponentProps<{
     project_name: string;
+    search: string;
   }> {
   issues: {
     [_id: string]: IssueType;
@@ -42,16 +44,23 @@ class Project extends Component<ProjectProps, ProjectState> {
       alertVisible: false
     };
   }
-  fetchIssues = ({ page, projectName }: FetchIssuesArgsType) => {
+  fetchIssues = ({ page, projectName, searchQuery }: FetchIssuesArgsType) => {
     this.props.fetchIssues({
       page,
-      projectName
+      projectName,
+      searchQuery
     });
   };
   componentDidMount = () => {
+    const {
+      match: { params },
+      location: { search }
+    } = this.props;
+    const searchQuery = queryString.parse(search);
     this.fetchIssues({
       page: 1,
-      projectName: this.props.match.params.project_name
+      projectName: params.project_name,
+      searchQuery
     });
   };
   handlePageChange = async (page: number) => {
@@ -63,7 +72,7 @@ class Project extends Component<ProjectProps, ProjectState> {
   render() {
     const { project_name } = this.props.match.params;
     const {
-      issues,
+      issues: issuesObj,
       ids,
       alert,
       error,
@@ -72,6 +81,7 @@ class Project extends Component<ProjectProps, ProjectState> {
       count,
       page
     } = this.props;
+    const issues = ids.map(id => issuesObj[id]);
     return (
       <div className='w-100 d-flex flex-column align-items-center'>
         <h2 className='project-title my-3 p-3 w-100'>
@@ -103,23 +113,26 @@ class Project extends Component<ProjectProps, ProjectState> {
         </div>
         <Row className='issues-row pt-4 my-4 w-100'>
           {loading === 'fetchIssues' && <Loader />}
-          {ids
-            .map(id => issues[id])
-            .map((issue, i) => {
-              return (
-                <Col key={i} xs='12'>
-                  <Issue project_name={project_name} {...issue} />
-                </Col>
-              );
-            })}
+          {loading !== 'fetchIssues' && !issues.length && (
+            <div className='text-center m-auto'>No Issues Found</div>
+          )}
+          {issues.map((issue, i) => {
+            return (
+              <Col key={i} xs='12'>
+                <Issue project_name={project_name} {...issue} />
+              </Col>
+            );
+          })}
         </Row>
-        <Pagination
-          activePage={page}
-          itemsCountPerPage={5}
-          totalItemsCount={count}
-          pageRangeDisplayed={5}
-          onChange={this.handlePageChange}
-        />
+        {issues.length ? (
+          <Pagination
+            activePage={page}
+            itemsCountPerPage={5}
+            totalItemsCount={count}
+            pageRangeDisplayed={5}
+            onChange={this.handlePageChange}
+          />
+        ) : null}
       </div>
     );
   }

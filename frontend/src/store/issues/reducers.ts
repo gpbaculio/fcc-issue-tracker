@@ -90,7 +90,6 @@ export default (state = initState, action: IssuesActionTypes) => {
     case TOGGLE_ISSUE_SUCCESS:
     case UPDATE_ISSUE_SUCCESS: {
       const { issue } = action.payload;
-      console.log('update issue ', issue);
       return {
         ...state,
         issues: {

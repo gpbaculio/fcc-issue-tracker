@@ -29,7 +29,8 @@ const issue = new schema.Entity('issues', {}, { idAttribute: '_id' });
 
 export const fetchIssues = ({
   projectName,
-  page
+  page,
+  searchQuery
 }: FetchIssuesArgsType): ThunkAction<
   void,
   AppState,
@@ -40,7 +41,7 @@ export const fetchIssues = ({
   try {
     const limit = 5;
     const offset = (page - 1) * limit;
-    const params: FetchIssuesParamsType = { offset, limit };
+    const params: FetchIssuesParamsType = { ...searchQuery, offset, limit };
     const { data } = await axios.get(`/api/issues/${projectName}`, {
       params
     });
@@ -172,7 +173,6 @@ export const updateIssue = ({
     });
     dispatch({ type: UPDATE_ISSUE_SUCCESS, payload: { issue } });
   } catch (error) {
-    console.log('error ', error);
     dispatch({
       type: REQUEST_FAILURE,
       payload: {

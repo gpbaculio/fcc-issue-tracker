@@ -33,7 +33,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "remove": "^0.1.5",
-    "typescript": "3.5.2"
+    "typescript": "^3.5.0-rc"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -20,6 +20,7 @@ class App {
         this.projectRoutes = new projectRoutes_1.default();
         this.fccTestingRoute = new fcc_testing_1.default();
         this.mongoSetup();
+        this.app.use(cors({ origin: '*' }));
         this.app.use(helmet());
         this.app.use(helmet.noSniff());
         this.app.use(helmet.xssFilter());
@@ -31,6 +32,10 @@ class App {
             resave: true,
             saveUninitialized: true
         };
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({
+            extended: true
+        }));
         if (process.env.NODE_ENV === 'test') {
             this.app.set('trust proxy', 1); // trust first proxy
             sessionConfig.cookie.secure = true; // serve secure cookies
@@ -42,11 +47,6 @@ class App {
             });
         }
         this.app.use(session(sessionConfig));
-        this.app.use(bodyParser.urlencoded({
-            extended: true
-        }));
-        this.app.use(cors({ origin: '*' }));
-        this.app.use(bodyParser.json());
         this.projectRoutes.routes(this.app);
         this.issueRoutes.routes(this.app);
         this.fccTestingRoute.routes(this.app);

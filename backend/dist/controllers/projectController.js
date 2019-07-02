@@ -4,6 +4,7 @@ const Project_1 = require("../models/Project");
 class ProjectController {
     constructor() {
         this.getProject = (req, res) => {
+            console.log('api info');
             const { project_name } = req.query;
             Project_1.default.find({ project_name: { $regex: project_name, $options: 'i' } }, 'project_name', (error, issues) => {
                 if (error)

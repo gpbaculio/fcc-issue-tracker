@@ -10,6 +10,7 @@ import Project, { ProjectDocument } from '../models/Project';
 
 export default class ProjectController {
   public getProject = (req: Request, res: Response) => {
+    console.log('api info');
     const { project_name } = req.query;
     Project.find(
       { project_name: { $regex: project_name, $options: 'i' } },

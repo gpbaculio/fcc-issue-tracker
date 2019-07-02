@@ -48,6 +48,7 @@ export default class IssueController {
     });
   };
   public getIssues = async (req: Request, res: Response) => {
+    console.log('api info');
     const { project_name } = req.params;
     const { offset, limit, ...params } = req.query;
     const query = Object.keys(params).reduce(

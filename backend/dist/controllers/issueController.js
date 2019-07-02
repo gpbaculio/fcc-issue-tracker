@@ -66,6 +66,7 @@ class IssueController {
             });
         });
         this.getIssues = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            console.log('api info');
             const { project_name } = req.params;
             const _a = req.query, { offset, limit } = _a, params = __rest(_a, ["offset", "limit"]);
             const query = Object.keys(params).reduce((q, key) => {

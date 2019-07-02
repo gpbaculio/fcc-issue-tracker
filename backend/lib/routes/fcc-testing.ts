@@ -49,6 +49,7 @@ const testFilter = (tests, type, n) => {
   }
   return out;
 };
+
 export default class FCCTesting {
   public routes(app): void {
     app.route('/_api/server.js').get(function(req, res, next) {
@@ -100,11 +101,9 @@ export default class FCCTesting {
       }
     );
     app.get('/_api/app-info', function(req, res) {
-      console.log('res', res);
       var hs = Object.keys(res._headers).filter(
         h => !h.match(/^access-control-\w+/)
       );
-      console.log('hs ', hs);
       var hObj = {};
       hs.forEach(h => {
         hObj[h] = res._headers[h];

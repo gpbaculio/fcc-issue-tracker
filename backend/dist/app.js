@@ -37,8 +37,8 @@ class App {
             extended: true
         }));
         if (process.env.NODE_ENV === 'test') {
-            this.app.set('trust proxy', 1); // trust first proxy
-            sessionConfig.cookie.secure = true; // serve secure cookies
+            // this.app.set('trust proxy', 1); // trust first proxy <--- productio
+            // sessionConfig.cookie.secure = true; // serve secure cookies
             // Serve any static files
             this.app.use(express.static(path.join(__dirname, '../../frontend/build')));
             // Handle React routing, return all requests to React app

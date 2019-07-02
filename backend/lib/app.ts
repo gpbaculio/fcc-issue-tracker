@@ -36,7 +36,6 @@ class App {
     mongoose.set('useFindAndModify', false);
   }
   constructor() {
-    this.mongoSetup();
     this.app.use(helmet());
     this.app.use(helmet.noSniff());
     this.app.use(helmet.xssFilter());
@@ -55,6 +54,11 @@ class App {
         extended: true
       })
     );
+    this.mongoSetup();
+    if (process.env.NODE_ENV === 'production') {
+      this.app.set('trust proxy', 1); // trust first proxy
+      sessionConfig.cookie.secure = true; // serve secure cookies
+    }
     if (process.env.NODE_ENV === 'test') {
       // this.app.set('trust proxy', 1); // trust first proxy <--- production
       // sessionConfig.cookie.secure = true; // serve secure cookies

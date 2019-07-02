@@ -76,7 +76,6 @@ class IssueController {
                     q[key] = param;
                 return q;
             }, { project_name });
-            console.log('query ', query);
             Project_1.default.findOne({ project_name }, (error, project) => {
                 if (error)
                     return res.status(500).send(error.message);

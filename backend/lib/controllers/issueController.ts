@@ -59,7 +59,6 @@ export default class IssueController {
       },
       { project_name }
     );
-    console.log('query ', query);
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project does not exist');

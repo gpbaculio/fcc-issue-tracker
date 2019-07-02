@@ -88,7 +88,7 @@ export const closeAlert = (): ThunkAction<
 export const toggleIssueStatus = ({
   id,
   projectName,
-  status
+  open
 }: ToggleIssueArgsType): ThunkAction<
   void,
   AppState,
@@ -105,7 +105,7 @@ export const toggleIssueStatus = ({
     } = await axios({
       method: 'PUT',
       url: `/api/issues/${projectName}`,
-      data: { status, id }
+      data: { open, id }
     });
     dispatch({ type: TOGGLE_ISSUE_SUCCESS, payload: { issue } });
   } catch (error) {

@@ -20,7 +20,7 @@ import { AppState } from '../store';
 import IssueInput from './IssueInput';
 
 interface IssueProps extends IssueType {
-  toggleIssueStatus: ({ id, projectName, status }: ToggleIssueArgsType) => void;
+  toggleIssueStatus: ({ id, projectName, open }: ToggleIssueArgsType) => void;
   project_name: string;
   alert: AlertType;
   closeAlert: () => void;
@@ -38,7 +38,7 @@ const Issue = ({
   status_text,
   createdAt,
   updatedAt,
-  status,
+  open,
   loading,
   toggleIssueStatus,
   project_name,
@@ -69,7 +69,7 @@ const Issue = ({
         e.preventDefault();
         updateIssue(updateIssueArgs);
       }}
-      style={{ backgroundColor: status ? '#f5f5f5' : '#D3D3D3' }}
+      style={{ backgroundColor: open ? '#f5f5f5' : '#D3D3D3' }}
       className='w-50 my-2 p-4 issue-container mx-auto d-flex flex-column align-items-center'>
       <Alert
         fade={false}
@@ -98,7 +98,7 @@ const Issue = ({
             setVal={setIssueTitle}
             setEditing={setEditing}
           />
-          - {status ? 'open' : 'close'}
+          - {open ? 'open' : 'close'}
         </h4>
       </div>
       <div className='my-4'>
@@ -159,12 +159,12 @@ const Issue = ({
             toggleIssueStatus({
               id: _id,
               projectName: project_name,
-              status: !status
+              open: !open
             })
           }
-          color={status ? 'success' : 'danger'}>
+          color={open ? 'success' : 'danger'}>
           {loading === 'toggleStatus' && <Spinner size='sm' color='light' />}
-          {status ? (
+          {open ? (
             <React.Fragment>
               <GoIssueOpened />
               Open

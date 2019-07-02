@@ -42,7 +42,7 @@ export interface IssueType {
   status_text: string;
   createdAt: string;
   updatedAt: string;
-  status: boolean;
+  open: boolean;
   loading: string | null;
 }
 
@@ -52,7 +52,7 @@ export interface IssuesType {
 export interface ToggleIssueArgsType {
   id: string;
   projectName: string;
-  status: boolean;
+  open: boolean;
 }
 export interface UpdateIssueArgs {
   id: string;

@@ -27,7 +27,7 @@ const IssueSchema = new mongoose.Schema({
         ref: 'Project',
         required: false
     },
-    status: {
+    open: {
         type: Boolean,
         default: true
     }

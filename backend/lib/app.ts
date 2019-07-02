@@ -70,7 +70,7 @@ class App {
         extended: true
       })
     );
-    this.app.use(cors({ optionSuccessStatus: 200, origin: '*' }));
+    this.app.use(cors({ origin: '*' }));
     this.app.use(bodyParser.json());
 
     this.projectRoutes.routes(this.app);

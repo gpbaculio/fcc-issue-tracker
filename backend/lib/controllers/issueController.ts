@@ -76,7 +76,6 @@ export default class IssueController {
       );
     });
   };
-
   public update = async (req: Request, res: Response) => {
     const { id, ...params } = req.body;
     const { project_name } = req.params;

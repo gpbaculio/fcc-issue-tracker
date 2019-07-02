@@ -20,10 +20,10 @@ class App {
         this.projectRoutes = new projectRoutes_1.default();
         this.fccTestingRoute = new fcc_testing_1.default();
         this.mongoSetup();
-        this.app.use(cors({ origin: '*' }));
         this.app.use(helmet());
         this.app.use(helmet.noSniff());
         this.app.use(helmet.xssFilter());
+        this.app.use(cors({ optionSuccessStatus: 200, origin: '*' }));
         // secure cookies with express-session
         const sessionConfig = {
             secret: process.env.SECRET_KEY,
@@ -37,7 +37,7 @@ class App {
             extended: true
         }));
         if (process.env.NODE_ENV === 'test') {
-            // this.app.set('trust proxy', 1); // trust first proxy <--- productio
+            // this.app.set('trust proxy', 1); // trust first proxy <--- production
             // sessionConfig.cookie.secure = true; // serve secure cookies
             // Serve any static files
             this.app.use(express.static(path.join(__dirname, '../../frontend/build')));

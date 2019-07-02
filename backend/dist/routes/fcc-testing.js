@@ -90,7 +90,9 @@ class FCCTesting {
             });
         });
         app.get('/_api/app-info', function (req, res) {
+            console.log('res', res);
             var hs = Object.keys(res._headers).filter(h => !h.match(/^access-control-\w+/));
+            console.log('hs ', hs);
             var hObj = {};
             hs.forEach(h => {
                 hObj[h] = res._headers[h];

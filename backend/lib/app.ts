@@ -37,10 +37,18 @@ class App {
   }
   constructor() {
     this.mongoSetup();
+    this.app.use(function(req, res, next) {
+      res.header('Access-Control-Allow-Origin', '*');
+      res.header(
+        'Access-Control-Allow-Headers',
+        'Origin, X-Requested-With, Content-Type, Accept'
+      );
+      next();
+    });
+    this.app.use(cors({ optionSuccessStatus: 200, origin: '*' }));
     this.app.use(helmet());
     this.app.use(helmet.noSniff());
     this.app.use(helmet.xssFilter());
-    this.app.use(cors({ optionSuccessStatus: 200, origin: '*' }));
     // secure cookies with express-session
     const sessionConfig: sessionConfigType = {
       secret: process.env.SECRET_KEY,

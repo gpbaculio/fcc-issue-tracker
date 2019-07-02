@@ -81,7 +81,6 @@ const Issue = ({
       </Alert>
       {loading === 'updateIssue' && (
         <React.Fragment>
-          {' '}
           <Spinner size='lg' color='primary' /> Updating Issue...
         </React.Fragment>
       )}

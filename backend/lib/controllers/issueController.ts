@@ -19,9 +19,16 @@ export default class IssueController {
         'issue_title issue_text created_by assigned_to status_text open _id createdAt updatedAt',
         (error, issue) => {
           if (error) return res.send(500).send(error.message);
-          res.status(200).json(error);
-          res.json({
-            ...issue,
+          res.status(200).json({
+            issue_title: issue.issue_title,
+            issue_text: issue.issue_text,
+            created_by: issue.created_by,
+            assigned_to: issue.assigned_to,
+            status_text: issue.status_text,
+            open: issue.open,
+            _id: issue._id,
+            createdAt: issue.createdAt,
+            updatedAt: issue.updatedAt,
             message: `Successfully submitted issue ${issue.issue_title}`
           });
         }

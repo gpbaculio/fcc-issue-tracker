@@ -7,6 +7,9 @@ export interface IssueDocument extends mongoose.Document {
   created_by: string;
   assigned_to: string;
   status_text: string;
+  open: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 const IssueSchema = new mongoose.Schema(

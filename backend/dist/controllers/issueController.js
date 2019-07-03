@@ -115,7 +115,7 @@ class IssueController {
                 Issue_1.default.findOneAndUpdate({ _id, project_name }, { $set: query }, { new: true }, (error, issue) => {
                     if (error)
                         return res.status(404).send(error.message);
-                    res.json(issue);
+                    res.send('successfully updated');
                 });
             });
         });

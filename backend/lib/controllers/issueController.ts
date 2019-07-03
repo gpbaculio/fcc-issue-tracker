@@ -98,6 +98,7 @@ export default class IssueController {
         { $set: query },
         { new: true },
         (error, issue) => {
+          if (!issue) return res.status(404).send('Issue does not exist');
           if (error) return res.status(404).send(error.message);
           res.send('successfully updated');
         }

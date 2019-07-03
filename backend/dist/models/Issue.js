@@ -34,7 +34,7 @@ const IssueSchema = new mongoose.Schema({
         default: true
     }
 }, {
-    timestamps: { createdAt: 'created_on', updatedAt: 'updated_at' },
+    timestamps: { createdAt: 'created_on', updatedAt: 'updated_on' },
     versionKey: false
 });
 exports.default = mongoose.model('Issue', IssueSchema);

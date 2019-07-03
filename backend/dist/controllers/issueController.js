@@ -25,9 +25,14 @@ class IssueController {
     constructor() {
         this.createIssue = (res, params) => {
             const newIssue = new Issue_1.default(params);
+            const requiredFields = ['issue_title', 'issue_text', 'created_by'];
+            const paramKeys = Object.keys(params);
+            const valid = requiredFields.every(k => paramKeys.includes(k));
+            if (!valid)
+                return res.status(500).send('missing inputs');
             newIssue.save((error, savedIssue) => {
                 if (error)
-                    return res.status(200).send(error.message);
+                    return res.status(500).send(error.message);
                 Issue_1.default.findById(savedIssue._id, (error, issue) => {
                     if (error)
                         return res.send(500).send(error.message);

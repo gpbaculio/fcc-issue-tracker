@@ -90,6 +90,10 @@ export default class IssueController {
       if (param || typeof param === 'boolean') q[key] = param;
       return q;
     }, {});
+    console.log('params ', params);
+    console.log('query ', query);
+    console.log('_id ', _id);
+    console.log('project_name ', project_name);
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project not found');

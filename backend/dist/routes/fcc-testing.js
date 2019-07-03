@@ -76,20 +76,24 @@ class FCCTesting {
         });
         var error;
         app.get('/_api/get-tests', cors(), function (req, res, next) {
+            console.log('/_api/get-tests 1');
             console.log(error);
             if (!error && process.env.NODE_ENV === 'test')
                 return next();
             res.json({ status: 'unavailable' });
         }, function (req, res, next) {
+            console.log('/_api/get-tests 2');
             if (!runner.report)
                 return next();
             res.json(testFilter(runner.report, req.query.type, req.query.n));
         }, function (req, res) {
+            console.log('/_api/get-tests 3');
             runner.on('done', function (report) {
                 process.nextTick(() => res.json(testFilter(runner.report, req.query.type, req.query.n)));
             });
         });
         app.get('/_api/app-info', function (req, res) {
+            console.log('/_api/app-info!');
             var hs = Object.keys(res._headers).filter(h => !h.match(/^access-control-\w+/));
             var hObj = {};
             hs.forEach(h => {

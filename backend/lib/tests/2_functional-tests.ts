@@ -10,8 +10,59 @@ var chaiHttp = require('chai-http');
 var chaiModule = require('chai');
 var assert = chaiModule.assert;
 import server from '../server';
+import Issue, { IssueDocument } from '../models/Issue';
+import Project, { ProjectDocument } from '../models/Project';
 
 chaiModule.use(chaiHttp);
+const createTestIssue = function(done, issue_title, cb) {
+  const issue = new Issue({
+    issue_title,
+    issue_text: 'test-hook',
+    created_by: 'test-hook'
+  });
+
+  issue
+    .save()
+    .then(function(rec) {
+      console.log(`created test issue ${rec.issue_title}`);
+      if (cb) cb(rec._id);
+      done();
+    })
+    .catch(function(err) {
+      console.error(err.message);
+      done();
+    });
+};
+
+const deleteTestIssue = function(done, filter) {
+  const filterKey = Object.keys(filter)[0];
+  Issue.findOneAndDelete(filter)
+    .then(function(rec) {
+      console.log(`test issue ${rec[filterKey]} deleted`);
+      done();
+    })
+    .catch(function(err) {
+      console.error(err.message);
+      done();
+    });
+};
+
+const createTestProject = function(done, project_name) {
+  const project = new Project({
+    project_name
+  });
+
+  project
+    .save()
+    .then(function(rec) {
+      console.log(`created test project ${project_name}`);
+      done();
+    })
+    .catch(function(err) {
+      console.error(err.message);
+      done();
+    });
+};
 
 suite('Functional Tests', function() {
   suite('POST /api/issues/{project} => object with issue data', function() {
@@ -57,8 +108,8 @@ suite('Functional Tests', function() {
             res.body.created_by,
             'Functional Test - Required fields filled in'
           );
-          assert.equal(res.body.assigned_to, undefined);
-          assert.equal(res.body.status_text, undefined);
+          assert.equal(res.body.assigned_to, '');
+          assert.equal(res.body.status_text, '');
           assert.equal(res.body.open, true);
           done();
         });
@@ -74,21 +125,74 @@ suite('Functional Tests', function() {
         })
         .end(function(err, res) {
           assert.equal(res.status, 200);
-          assert.equal(
-            res.text,
-            'Issue validation failed: issue_text: Path `issue_text` is required.'
-          );
+          assert.equal(res.text, 'missing inputs');
           done();
         });
     });
   });
 
   suite('PUT /api/issues/{project} => text', function() {
-    test('No body', function(done) {});
+    let testId;
+    let issue_title = `test-title${Date.now()}`;
 
-    test('One field to update', function(done) {});
+    before(function(done) {
+      createTestIssue(done, issue_title, function(id) {
+        testId = id;
+        console.log('testId ', testId);
+        return;
+      });
+    });
 
-    test('Multiple fields to update', function(done) {});
+    after(function(done) {
+      deleteTestIssue(done, { _id: testId });
+    });
+
+    test('No body', function(done) {
+      chaiModule
+        .request(server)
+        .put('/api/issues/test')
+        .send({ _id: testId })
+        .end(function(err, res) {
+          console.log('res ', res.text);
+          assert.equal(res.status, 200);
+          assert.property(res.body, 'message');
+          assert.equal(res.body.message, 'no updated field sent');
+          done();
+        });
+    });
+
+    test('One field to update', function(done) {
+      chaiModule
+        .request(server)
+        .put('/api/issues/test')
+        .send({
+          _id: testId,
+          issue_title: 'updated-title'
+        })
+        .end(function(err, res) {
+          assert.equal(res.status, 200);
+          assert.property(res.body, 'message');
+          assert.equal(res.body.message, `successfully updated ${testId}`);
+          done();
+        });
+    });
+
+    test('Multiple fields to update', function(done) {
+      chaiModule
+        .request(server)
+        .put('/api/issues/test')
+        .send({
+          _id: testId,
+          issue_title: 'updated-title',
+          issue_text: 'updated-text'
+        })
+        .end(function(err, res) {
+          assert.equal(res.status, 200);
+          assert.property(res.body, 'message');
+          assert.equal(res.body.message, `successfully updated ${testId}`);
+          done();
+        });
+    });
   });
 
   suite(

@@ -29,7 +29,6 @@ class IssueController {
                 if (error)
                     return res.status(200).send(error.message);
                 Issue_1.default.findById(savedIssue._id, (error, issue) => {
-                    console.log('issue ', issue);
                     if (error)
                         return res.send(500).send(error.message);
                     res.status(200).json(issue);

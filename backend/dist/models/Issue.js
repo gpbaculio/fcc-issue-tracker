@@ -16,10 +16,12 @@ const IssueSchema = new mongoose.Schema({
     },
     assigned_to: {
         type: String,
+        default: '',
         required: false
     },
     status_text: {
         type: String,
+        default: '',
         required: false
     },
     project_name: {
@@ -32,7 +34,7 @@ const IssueSchema = new mongoose.Schema({
         default: true
     }
 }, {
-    timestamps: true,
+    timestamps: { createdAt: 'created_on', updatedAt: 'updated_at' },
     versionKey: false
 });
 exports.default = mongoose.model('Issue', IssueSchema);

@@ -46,7 +46,7 @@ const IssueSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true,
+    timestamps: { createdAt: 'created_on', updatedAt: 'updated_at' },
     versionKey: false
   }
 );

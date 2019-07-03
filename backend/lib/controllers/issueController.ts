@@ -72,7 +72,7 @@ export default class IssueController {
         null,
         { skip: parseInt(offset), limit: parseInt(limit) },
         (error, issues) => {
-          console.log('issues ', issues);
+          if (!issues.length) return res.status(500).send('Not Found');
           if (error) return res.status(500).send(error.message);
           Issue.countDocuments(query, (error, count) => {
             if (error) return res.status(500).send(error.message);

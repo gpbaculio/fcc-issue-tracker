@@ -81,18 +81,19 @@ export default class IssueController {
     });
   };
   public update = async (req: Request, res: Response) => {
-    const { id, ...params } = req.body;
+    const { id, _id, ...params } = req.body;
     const { project_name } = req.params;
     const query = Object.keys(params).reduce((q, key) => {
       const param = params[key];
       if (param || typeof param === 'boolean') q[key] = param;
       return q;
     }, {});
+    console.log('params ', params);
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project does not exist');
       Issue.findOneAndUpdate(
-        { _id: id, project_name },
+        { _id: id || _id, project_name },
         { $set: query },
         { new: true },
         (error, issue) => {

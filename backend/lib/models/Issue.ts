@@ -27,10 +27,12 @@ const IssueSchema = new mongoose.Schema(
     },
     assigned_to: {
       type: String,
+      default: '',
       required: false
     },
     status_text: {
       type: String,
+      default: '',
       required: false
     },
     project_name: {

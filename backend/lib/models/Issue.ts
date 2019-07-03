@@ -1,7 +1,6 @@
 import * as mongoose from 'mongoose';
 
 export interface IssueDocument extends mongoose.Document {
-  path: string;
   issue_title: string;
   issue_text: string;
   created_by: string;

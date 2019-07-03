@@ -31,7 +31,7 @@ suite('Functional Tests', function() {
           assert.equal(res.body.issue_title, 'Title');
           assert.equal(res.body.issue_text, 'text');
           assert.equal(
-            res.body.issue.created_by,
+            res.body.created_by,
             'Functional Test - Every field filled in'
           );
           assert.equal(res.body.assigned_to, 'Chai and Mocha');
@@ -54,7 +54,7 @@ suite('Functional Tests', function() {
           assert.equal(res.body.issue_title, 'Title');
           assert.equal(res.body.issue_text, 'text');
           assert.equal(
-            res.body.issue.created_by,
+            res.body.created_by,
             'Functional Test - Required fields filled in'
           );
           assert.equal(res.body.assigned_to, undefined);

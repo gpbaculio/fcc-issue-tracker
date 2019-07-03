@@ -14,25 +14,11 @@ export default class IssueController {
     const newIssue = new Issue(params);
     newIssue.save((error, savedIssue) => {
       if (error) return res.status(200).send(error.message);
-      Issue.findById(
-        savedIssue._id,
-        'issue_title issue_text created_by assigned_to status_text open _id createdAt updatedAt',
-        (error, issue) => {
-          if (error) return res.send(500).send(error.message);
-          res.status(200).json({
-            issue_title: issue.issue_title,
-            issue_text: issue.issue_text,
-            created_by: issue.created_by,
-            assigned_to: issue.assigned_to,
-            status_text: issue.status_text,
-            open: issue.open,
-            _id: issue._id,
-            createdAt: issue.createdAt,
-            updatedAt: issue.updatedAt,
-            message: `Successfully submitted issue ${issue.issue_title}`
-          });
-        }
-      );
+      Issue.findById(savedIssue._id, (error, issue) => {
+        console.log('issue ', issue);
+        if (error) return res.send(500).send(error.message);
+        res.status(200).json(issue);
+      });
     });
   };
   public create = async (req: Request, res: Response) => {

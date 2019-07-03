@@ -57,7 +57,7 @@ export default class IssueController {
     const query = Object.keys(params).reduce(
       (q, key) => {
         const param = params[key];
-        if (key === 'open') q['open'] = Boolean(param);
+        if (key === 'open') q['open'] = param === 'false' ? false : true;
         else q[key] = param;
         return q;
       },

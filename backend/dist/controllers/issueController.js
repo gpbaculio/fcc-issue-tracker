@@ -99,7 +99,7 @@ class IssueController {
             });
         });
         this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const _b = req.body, { id, _id } = _b, params = __rest(_b, ["id", "_id"]);
+            const _b = req.body, { _id } = _b, params = __rest(_b, ["_id"]);
             const { project_name } = req.params;
             const query = Object.keys(params).reduce((q, key) => {
                 const param = params[key];
@@ -112,7 +112,7 @@ class IssueController {
                     return res.status(500).send(error.message);
                 if (!project)
                     return res.status(500).send('Project not found');
-                Issue_1.default.findOneAndUpdate({ _id: id || _id, project_name }, { $set: query }, { new: true }, (error, issue) => {
+                Issue_1.default.findOneAndUpdate({ _id, project_name }, { $set: query }, { new: true }, (error, issue) => {
                     if (error)
                         return res.status(404).send(error.message);
                     res.json(issue);

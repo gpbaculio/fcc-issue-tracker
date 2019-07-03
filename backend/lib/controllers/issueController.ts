@@ -81,7 +81,7 @@ export default class IssueController {
     });
   };
   public update = async (req: Request, res: Response) => {
-    const { id, _id, ...params } = req.body;
+    const { _id, ...params } = req.body;
     const { project_name } = req.params;
     const query = Object.keys(params).reduce((q, key) => {
       const param = params[key];
@@ -92,7 +92,7 @@ export default class IssueController {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project not found');
       Issue.findOneAndUpdate(
-        { _id: id || _id, project_name },
+        { _id, project_name },
         { $set: query },
         { new: true },
         (error, issue) => {

@@ -29,7 +29,7 @@ class IssueController {
             const paramKeys = Object.keys(params);
             const valid = requiredFields.every(k => paramKeys.includes(k));
             if (!valid)
-                return res.status(500).send('missing inputs');
+                return res.status(200).send('missing inputs');
             newIssue.save((error, savedIssue) => {
                 if (error)
                     return res.status(500).send(error.message);

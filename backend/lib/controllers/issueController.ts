@@ -97,7 +97,7 @@ export default class IssueController {
         { new: true },
         (error, issue) => {
           if (error) return res.status(404).send(error.message);
-          res.json(issue);
+          res.send('successfully updated');
         }
       );
     });

@@ -57,17 +57,20 @@ class IssueController {
             }
         });
         this.delete = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { project_name } = req.params;
-            const { id } = req.body;
-            const project = yield Project_1.default.findOne({ project_name });
-            if (!project)
-                return res.status(404).send('Project does not exist');
-            Issue_1.default.findOneAndRemove({ _id: id, project_name }, (error, issue) => {
+            const { project_name, issue_id } = req.params;
+            if (!issue_id)
+                return res.status(400).send('_id error');
+            Project_1.default.findOne({ project_name }, (error, project) => {
                 if (error)
-                    return res.status(404).send('Issue not found');
-                res.json({
-                    issue,
-                    message: `Successfully deleted issue ${issue.issue_title}`
+                    return res.status(500).send(error.message);
+                if (!project)
+                    return res.status(404).send('project does not exist');
+                Issue_1.default.findOneAndRemove({ _id: issue_id, project_name }, (error, issue) => {
+                    if (error)
+                        return res.status(500).send(`could not delete ${issue._id}`);
+                    if (!issue)
+                        return res.status(404).send('issue not found');
+                    res.status(200).send(`deleted ${issue._id}`);
                 });
             });
         });
@@ -82,7 +85,6 @@ class IssueController {
                     q[key] = param;
                 return q;
             }, { project_name });
-            console.log('getIssues query ', query);
             Project_1.default.findOne({ project_name }, (error, project) => {
                 if (error)
                     return res.status(500).send(error.message);
@@ -104,16 +106,15 @@ class IssueController {
         this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
             const _b = req.body, { _id } = _b, params = __rest(_b, ["_id"]);
             const { project_name } = req.params;
-            const query = Object.keys(params).reduce((q, key) => {
+            const paramKeys = Object.keys(params);
+            const query = paramKeys.reduce((q, key) => {
                 const param = params[key];
                 if (param || typeof param === 'boolean')
                     q[key] = param;
                 return q;
             }, {});
-            console.log('params ', params);
-            console.log('query ', query);
-            console.log('_id ', _id);
-            console.log('project_name ', project_name);
+            if (!paramKeys.length)
+                return res.status(200).send('no fields to update');
             Project_1.default.findOne({ project_name }, (error, project) => {
                 if (error)
                     return res.status(500).send(error.message);
@@ -124,7 +125,7 @@ class IssueController {
                         return res.status(404).send('Issue does not exist');
                     if (error)
                         return res.status(404).send(error.message);
-                    res.send('successfully updated');
+                    res.status(200).send('successfully updated');
                 });
             });
         });

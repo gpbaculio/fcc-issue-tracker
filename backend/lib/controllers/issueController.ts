@@ -39,16 +39,20 @@ export default class IssueController {
     }
   };
   public delete = async (req: Request, res: Response) => {
-    const { project_name } = req.params;
-    const { id } = req.body;
-    const project = await Project.findOne({ project_name });
-    if (!project) return res.status(404).send('Project does not exist');
-    Issue.findOneAndRemove({ _id: id, project_name }, (error, issue) => {
-      if (error) return res.status(404).send('Issue not found');
-      res.json({
-        issue,
-        message: `Successfully deleted issue ${issue.issue_title}`
-      });
+    const { project_name, issue_id } = req.params;
+    if (!issue_id) return res.status(400).send('_id error');
+    Project.findOne({ project_name }, (error, project) => {
+      if (error) return res.status(500).send(error.message);
+      if (!project) return res.status(404).send('project does not exist');
+      Issue.findOneAndRemove(
+        { _id: issue_id, project_name },
+        (error, issue) => {
+          if (error)
+            return res.status(500).send(`could not delete ${issue._id}`);
+          if (!issue) return res.status(404).send('issue not found');
+          res.status(200).send(`deleted ${issue._id}`);
+        }
+      );
     });
   };
   public getIssues = async (req: Request, res: Response) => {
@@ -63,7 +67,6 @@ export default class IssueController {
       },
       { project_name }
     );
-    console.log('getIssues query ', query);
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project does not exist');
@@ -85,15 +88,14 @@ export default class IssueController {
   public update = async (req: Request, res: Response) => {
     const { _id, ...params } = req.body;
     const { project_name } = req.params;
-    const query = Object.keys(params).reduce((q, key) => {
+    const paramKeys = Object.keys(params);
+    const query = paramKeys.reduce((q, key) => {
       const param = params[key];
       if (param || typeof param === 'boolean') q[key] = param;
       return q;
     }, {});
-    console.log('params ', params);
-    console.log('query ', query);
-    console.log('_id ', _id);
-    console.log('project_name ', project_name);
+
+    if (!paramKeys.length) return res.status(200).send('no fields to update');
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project not found');
@@ -104,7 +106,7 @@ export default class IssueController {
         (error, issue) => {
           if (!issue) return res.status(404).send('Issue does not exist');
           if (error) return res.status(404).send(error.message);
-          res.send('successfully updated');
+          res.status(200).send('successfully updated');
         }
       );
     });

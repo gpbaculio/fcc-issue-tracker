@@ -12,13 +12,15 @@ var chaiModule = require('chai');
 var assert = chaiModule.assert;
 const server_1 = require("../server");
 const Issue_1 = require("../models/Issue");
-const Project_1 = require("../models/Project");
 chaiModule.use(chaiHttp);
+const projectNameTest = 'test';
+const route = `/api/issues/${projectNameTest}`;
 const createTestIssue = function (done, issue_title, cb) {
     const issue = new Issue_1.default({
         issue_title,
         issue_text: 'test-hook',
-        created_by: 'test-hook'
+        created_by: 'test-hook',
+        project_name: projectNameTest
     });
     issue
         .save()
@@ -45,27 +47,12 @@ const deleteTestIssue = function (done, filter) {
         done();
     });
 };
-const createTestProject = function (done, project_name) {
-    const project = new Project_1.default({
-        project_name
-    });
-    project
-        .save()
-        .then(function (rec) {
-        console.log(`created test project ${project_name}`);
-        done();
-    })
-        .catch(function (err) {
-        console.error(err.message);
-        done();
-    });
-};
 suite('Functional Tests', function () {
     suite('POST /api/issues/{project} => object with issue data', function () {
         test('Every field filled in', function (done) {
             chaiModule
                 .request(server_1.default)
-                .post('/api/issues/test')
+                .post(route)
                 .send({
                 issue_title: 'Title',
                 issue_text: 'text',
@@ -87,7 +74,7 @@ suite('Functional Tests', function () {
         test('Required fields filled in', function (done) {
             chaiModule
                 .request(server_1.default)
-                .post('/api/issues/test')
+                .post(route)
                 .send({
                 issue_title: 'Title',
                 issue_text: 'text',
@@ -106,7 +93,7 @@ suite('Functional Tests', function () {
         test('Missing required fields', function (done) {
             chaiModule
                 .request(server_1.default)
-                .post('/api/issues/test')
+                .post(route)
                 .send({
                 issue_title: 'Title',
                 created_by: 'Functional Test - Missing required fields'
@@ -134,35 +121,32 @@ suite('Functional Tests', function () {
         test('No body', function (done) {
             chaiModule
                 .request(server_1.default)
-                .put('/api/issues/test')
+                .put(route)
                 .send({ _id: testId })
                 .end(function (err, res) {
-                console.log('res ', res.text);
                 assert.equal(res.status, 200);
-                assert.property(res.body, 'message');
-                assert.equal(res.body.message, 'no updated field sent');
+                assert.equal(res.text, 'no fields to update');
                 done();
             });
         });
         test('One field to update', function (done) {
             chaiModule
                 .request(server_1.default)
-                .put('/api/issues/test')
+                .put(route)
                 .send({
                 _id: testId,
                 issue_title: 'updated-title'
             })
                 .end(function (err, res) {
                 assert.equal(res.status, 200);
-                assert.property(res.body, 'message');
-                assert.equal(res.body.message, `successfully updated ${testId}`);
+                assert.equal(res.text, 'successfully updated');
                 done();
             });
         });
         test('Multiple fields to update', function (done) {
             chaiModule
                 .request(server_1.default)
-                .put('/api/issues/test')
+                .put(route)
                 .send({
                 _id: testId,
                 issue_title: 'updated-title',
@@ -170,17 +154,23 @@ suite('Functional Tests', function () {
             })
                 .end(function (err, res) {
                 assert.equal(res.status, 200);
-                assert.property(res.body, 'message');
-                assert.equal(res.body.message, `successfully updated ${testId}`);
+                assert.equal(res.text, 'successfully updated');
                 done();
             });
         });
     });
     suite('GET /api/issues/{project} => Array of objects with issue data', function () {
+        let issue_title = `test-title${Date.now()}`;
+        before(function (done) {
+            createTestIssue(done, issue_title);
+        });
+        after(function (done) {
+            deleteTestIssue(done, { issue_title });
+        });
         test('No filter', function (done) {
             chaiModule
                 .request(server_1.default)
-                .get('/api/issues/test')
+                .get(route)
                 .query({})
                 .end(function (err, res) {
                 assert.equal(res.status, 200);
@@ -197,12 +187,76 @@ suite('Functional Tests', function () {
                 done();
             });
         });
-        test('One filter', function (done) { });
-        test('Multiple filters (test for multiple fields you know will be in the db for a return)', function (done) { });
+        test('One filter', function (done) {
+            chaiModule
+                .request(server_1.default)
+                .get(route)
+                .query({ issue_text: 'test-hook' })
+                .end(function (err, res) {
+                assert.equal(res.status, 200);
+                assert.isArray(res.body);
+                assert.property(res.body[0], 'issue_title');
+                assert.property(res.body[0], 'issue_text');
+                assert.property(res.body[0], 'created_on');
+                assert.property(res.body[0], 'updated_on');
+                assert.property(res.body[0], 'created_by');
+                assert.property(res.body[0], 'assigned_to');
+                assert.property(res.body[0], 'open');
+                assert.property(res.body[0], 'status_text');
+                assert.property(res.body[0], '_id');
+                done();
+            });
+        });
+        test('Multiple filters (test for multiple fields you know will be in the db for a return)', function (done) {
+            chaiModule
+                .request(server_1.default)
+                .get(route)
+                .query({ issue_text: 'test-hook', created_by: 'test-hook' })
+                .end(function (err, res) {
+                assert.equal(res.status, 200);
+                assert.isArray(res.body);
+                assert.property(res.body[0], 'issue_title');
+                assert.property(res.body[0], 'issue_text');
+                assert.property(res.body[0], 'created_on');
+                assert.property(res.body[0], 'updated_on');
+                assert.property(res.body[0], 'created_by');
+                assert.property(res.body[0], 'assigned_to');
+                assert.property(res.body[0], 'open');
+                assert.property(res.body[0], 'status_text');
+                assert.property(res.body[0], '_id');
+                done();
+            });
+        });
     });
     suite('DELETE /api/issues/{project} => text', function () {
-        test('No _id', function (done) { });
-        test('Valid _id', function (done) { });
+        let testId;
+        let issue_title = `test-title${Date.now()}`;
+        before(function (done) {
+            createTestIssue(done, issue_title, function (id) {
+                testId = id;
+                return;
+            });
+        });
+        test('No _id', function (done) {
+            chaiModule
+                .request(server_1.default)
+                .delete(route)
+                .end(function (err, res) {
+                assert.equal(res.status, 400);
+                assert.equal(res.text, '_id error');
+                done();
+            });
+        });
+        test('Valid _id', function (done) {
+            chaiModule
+                .request(server_1.default)
+                .delete(`/api/issues/test/${testId}`)
+                .end(function (err, res) {
+                assert.equal(res.status, 200);
+                assert.equal(res.text, `deleted ${testId}`);
+                done();
+            });
+        });
     });
 });
 //# sourceMappingURL=2_functional-tests.js.map

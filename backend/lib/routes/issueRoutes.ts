@@ -19,5 +19,9 @@ export default class IssueRoutes {
       .post(this.issueController.create)
       .put(this.issueController.update)
       .delete(this.issueController.delete);
+
+    app
+      .route('/api/issues/:project_name/:issue_id')
+      .delete(this.issueController.delete);
   }
 }

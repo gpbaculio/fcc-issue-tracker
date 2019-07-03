@@ -12,12 +12,20 @@ import Project, { ProjectDocument } from '../models/Project';
 export default class IssueController {
   private createIssue = (res, params) => {
     const newIssue = new Issue(params);
-    newIssue.save((error, issue) => {
+    newIssue.save((error, savedIssue) => {
       if (error) return res.status(200).send(error.message);
-      res.json({
-        ...issue,
-        message: `Successfully submitted issue ${issue.issue_title}`
-      });
+      Issue.findById(
+        savedIssue._id,
+        'issue_title issue_text created_by assigned_to status_text open _id createdAt updatedAt',
+        (error, issue) => {
+          if (error) return res.send(500).send(error.message);
+          res.status(200).json(error);
+          res.json({
+            ...issue,
+            message: `Successfully submitted issue ${issue.issue_title}`
+          });
+        }
+      );
     });
   };
   public create = async (req: Request, res: Response) => {

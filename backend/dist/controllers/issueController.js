@@ -93,7 +93,7 @@ class IssueController {
                     Issue_1.default.countDocuments(query, (error, count) => {
                         if (error)
                             return res.status(500).send(error.message);
-                        res.json({ issues, count });
+                        res.json(issues);
                     });
                 });
             });

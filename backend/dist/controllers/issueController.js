@@ -107,7 +107,6 @@ class IssueController {
                     q[key] = param;
                 return q;
             }, {});
-            console.log('params ', params);
             Project_1.default.findOne({ project_name }, (error, project) => {
                 if (error)
                     return res.status(500).send(error.message);
@@ -116,10 +115,7 @@ class IssueController {
                 Issue_1.default.findOneAndUpdate({ _id: id || _id, project_name }, { $set: query }, { new: true }, (error, issue) => {
                     if (error)
                         return res.status(404).send(error.message);
-                    res.json({
-                        issue,
-                        message: `Successfully updated issue ${issue.issue_title}`
-                    });
+                    res.json(issue);
                 });
             });
         });

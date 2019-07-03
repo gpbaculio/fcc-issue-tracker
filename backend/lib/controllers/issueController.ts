@@ -88,7 +88,6 @@ export default class IssueController {
       if (param || typeof param === 'boolean') q[key] = param;
       return q;
     }, {});
-    console.log('params ', params);
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project does not exist');
@@ -98,10 +97,7 @@ export default class IssueController {
         { new: true },
         (error, issue) => {
           if (error) return res.status(404).send(error.message);
-          res.json({
-            issue,
-            message: `Successfully updated issue ${issue.issue_title}`
-          });
+          res.json(issue);
         }
       );
     });

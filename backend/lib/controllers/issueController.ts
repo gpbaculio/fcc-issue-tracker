@@ -90,7 +90,7 @@ export default class IssueController {
     }, {});
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
-      if (!project) return res.status(500).send('Project does not exist');
+      if (!project) return res.status(500).send('Project not found');
       Issue.findOneAndUpdate(
         { _id: id || _id, project_name },
         { $set: query },

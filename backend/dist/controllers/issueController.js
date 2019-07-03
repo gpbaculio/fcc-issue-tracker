@@ -82,12 +82,14 @@ class IssueController {
                     q[key] = param;
                 return q;
             }, { project_name });
+            console.log('getIssues query ', query);
             Project_1.default.findOne({ project_name }, (error, project) => {
                 if (error)
                     return res.status(500).send(error.message);
                 if (!project)
                     return res.status(500).send('Project does not exist');
                 Issue_1.default.find(query, null, { skip: parseInt(offset), limit: parseInt(limit) }, (error, issues) => {
+                    console.log('issues ', issues);
                     if (error)
                         return res.status(500).send(error.message);
                     Issue_1.default.countDocuments(query, (error, count) => {

@@ -63,6 +63,7 @@ export default class IssueController {
       },
       { project_name }
     );
+    console.log('getIssues query ', query);
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project does not exist');
@@ -71,6 +72,7 @@ export default class IssueController {
         null,
         { skip: parseInt(offset), limit: parseInt(limit) },
         (error, issues) => {
+          console.log('issues ', issues);
           if (error) return res.status(500).send(error.message);
           Issue.countDocuments(query, (error, count) => {
             if (error) return res.status(500).send(error.message);

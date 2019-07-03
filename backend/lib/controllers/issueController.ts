@@ -13,9 +13,9 @@ export default class IssueController {
   private createIssue = (res, params) => {
     const newIssue = new Issue(params);
     newIssue.save((error, issue) => {
-      if (error) return res.status(500).send(error.message);
+      if (error) return res.status(200).send(error.message);
       res.json({
-        issue,
+        ...issue,
         message: `Successfully submitted issue ${issue.issue_title}`
       });
     });
@@ -48,7 +48,6 @@ export default class IssueController {
     });
   };
   public getIssues = async (req: Request, res: Response) => {
-    console.log('api info');
     const { project_name } = req.params;
     const { offset, limit, ...params } = req.query;
     const query = Object.keys(params).reduce(

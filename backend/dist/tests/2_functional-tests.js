@@ -14,7 +14,6 @@ const server_1 = require("../server");
 chaiModule.use(chaiHttp);
 suite('Functional Tests', function () {
     suite('POST /api/issues/{project} => object with issue data', function () {
-        console.log('1');
         test('Every field filled in', function (done) {
             chaiModule
                 .request(server_1.default)
@@ -28,13 +27,12 @@ suite('Functional Tests', function () {
             })
                 .end(function (err, res) {
                 assert.equal(res.status, 200);
-                assert.equal(res.body.issue.issue_title, 'Title');
-                assert.equal(res.body.issue.issue_text, 'text');
+                assert.equal(res.body.issue_title, 'Title');
+                assert.equal(res.body.issue_text, 'text');
                 assert.equal(res.body.issue.created_by, 'Functional Test - Every field filled in');
-                assert.equal(res.body.issue.assigned_to, 'Chai and Mocha');
-                assert.equal(res.body.issue.status_text, 'In QA');
-                assert.equal(res.body.issue.open, true);
-                console.log('res.body.issue', res.body.issue);
+                assert.equal(res.body.assigned_to, 'Chai and Mocha');
+                assert.equal(res.body.status_text, 'In QA');
+                assert.equal(res.body.open, true);
                 done();
             });
         });
@@ -48,13 +46,12 @@ suite('Functional Tests', function () {
                 created_by: 'Functional Test - Required fields filled in'
             })
                 .end(function (err, res) {
-                assert.equal(res.body.issue.issue_title, 'Title');
-                assert.equal(res.body.issue.issue_text, 'text');
+                assert.equal(res.body.issue_title, 'Title');
+                assert.equal(res.body.issue_text, 'text');
                 assert.equal(res.body.issue.created_by, 'Functional Test - Required fields filled in');
-                assert.equal(res.body.issue.assigned_to, undefined);
-                assert.equal(res.body.issue.status_text, undefined);
-                assert.equal(res.body.issue.open, true);
-                console.log('res.body.issue', res.body.issue);
+                assert.equal(res.body.assigned_to, undefined);
+                assert.equal(res.body.status_text, undefined);
+                assert.equal(res.body.open, true);
                 done();
             });
         });
@@ -67,7 +64,7 @@ suite('Functional Tests', function () {
                 created_by: 'Functional Test - Missing required fields'
             })
                 .end(function (err, res) {
-                assert.equal(res.status, 500);
+                assert.equal(res.status, 200);
                 assert.equal(res.text, 'Issue validation failed: issue_text: Path `issue_text` is required.');
                 done();
             });

@@ -72,7 +72,7 @@ export class FormComponent extends Component<FormProps, FormState> {
       this.setState({
         error: false,
         ...this.initialFields,
-        message: data.message,
+        message: 'Success',
         alertVisible: true,
         loading: false
       });

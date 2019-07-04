@@ -25,7 +25,6 @@ const createTestIssue = function (done, issue_title, cb) {
     issue
         .save()
         .then(function (rec) {
-        console.log(`created test issue ${rec.issue_title}`);
         if (cb)
             cb(rec._id);
         done();
@@ -37,19 +36,21 @@ const createTestIssue = function (done, issue_title, cb) {
 };
 const deleteTestIssue = function (done, filter) {
     const filterKey = Object.keys(filter)[0];
-    Issue_1.default.findOneAndDelete(filter)
-        .then(function (rec) {
-        console.log(`test issue ${rec[filterKey]} deleted`);
-        done();
-    })
-        .catch(function (err) {
-        console.error(err.message);
+    Issue_1.default.findOneAndDelete(filter, (error, rec) => {
+        if (error)
+            console.error(error.message);
+        if (rec)
+            console.log('deleted issue ', rec._id);
         done();
     });
 };
 suite('Functional Tests', function () {
     suite('POST /api/issues/{project} => object with issue data', function () {
+        let testId;
         test('Every field filled in', function (done) {
+            after(function (done) {
+                deleteTestIssue(done, { _id: testId });
+            });
             chaiModule
                 .request(server_1.default)
                 .post(route)
@@ -61,6 +62,7 @@ suite('Functional Tests', function () {
                 status_text: 'In QA'
             })
                 .end(function (err, res) {
+                testId = res.body._id;
                 assert.equal(res.status, 200);
                 assert.equal(res.body.issue_title, 'Title');
                 assert.equal(res.body.issue_text, 'text');
@@ -72,6 +74,9 @@ suite('Functional Tests', function () {
             });
         });
         test('Required fields filled in', function (done) {
+            after(function (done) {
+                deleteTestIssue(done, { _id: testId });
+            });
             chaiModule
                 .request(server_1.default)
                 .post(route)
@@ -81,6 +86,7 @@ suite('Functional Tests', function () {
                 created_by: 'Functional Test - Required fields filled in'
             })
                 .end(function (err, res) {
+                testId = res.body._id;
                 assert.equal(res.body.issue_title, 'Title');
                 assert.equal(res.body.issue_text, 'text');
                 assert.equal(res.body.created_by, 'Functional Test - Required fields filled in');
@@ -91,6 +97,9 @@ suite('Functional Tests', function () {
             });
         });
         test('Missing required fields', function (done) {
+            after(function (done) {
+                deleteTestIssue(done, { _id: testId });
+            });
             chaiModule
                 .request(server_1.default)
                 .post(route)
@@ -99,6 +108,7 @@ suite('Functional Tests', function () {
                 created_by: 'Functional Test - Missing required fields'
             })
                 .end(function (err, res) {
+                testId = res.body._id;
                 assert.equal(res.status, 200);
                 assert.equal(res.text, 'missing inputs');
                 done();
@@ -111,7 +121,6 @@ suite('Functional Tests', function () {
         before(function (done) {
             createTestIssue(done, issue_title, function (id) {
                 testId = id;
-                console.log('testId ', testId);
                 return;
             });
         });

@@ -65,6 +65,7 @@ class IssueController {
                     return res.status(500).send(error.message);
                 if (!project)
                     return res.status(404).send('project does not exist');
+                console.log('issue_id ', issue_id);
                 Issue_1.default.findOneAndRemove({ _id: issue_id, project_name }, (error, issue) => {
                     if (error)
                         return res.status(500).send(`could not delete ${issue._id}`);
@@ -74,10 +75,8 @@ class IssueController {
                 });
             });
         });
-        this.getIssues = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const { project_name } = req.params;
-            const _a = req.query, { offset, limit } = _a, params = __rest(_a, ["offset", "limit"]);
-            const query = Object.keys(params).reduce((q, key) => {
+        this.getQuery = (params, project_name) => {
+            return Object.keys(params).reduce((q, key) => {
                 const param = params[key];
                 if (key === 'open')
                     q['open'] = param === 'false' ? false : true;
@@ -85,6 +84,11 @@ class IssueController {
                     q[key] = param;
                 return q;
             }, { project_name });
+        };
+        this.getIssues = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { project_name } = req.params;
+            const _a = req.query, { offset, limit } = _a, params = __rest(_a, ["offset", "limit"]);
+            const query = this.getQuery(params, project_name);
             Project_1.default.findOne({ project_name }, (error, project) => {
                 if (error)
                     return res.status(500).send(error.message);
@@ -95,16 +99,22 @@ class IssueController {
                         return res.status(500).send('Not Found');
                     if (error)
                         return res.status(500).send(error.message);
-                    Issue_1.default.countDocuments(query, (error, count) => {
-                        if (error)
-                            return res.status(500).send(error.message);
-                        res.json(issues);
-                    });
+                    res.json(issues);
                 });
             });
         });
+        this.getCount = (req, res) => __awaiter(this, void 0, void 0, function* () {
+            const { project_name } = req.params;
+            const _b = req.query, { offset, limit } = _b, params = __rest(_b, ["offset", "limit"]);
+            const query = this.getQuery(params, project_name);
+            Issue_1.default.countDocuments(query, (error, count) => {
+                if (error)
+                    return res.status(500).send(error.message);
+                res.status(200).send('' + count);
+            });
+        });
         this.update = (req, res) => __awaiter(this, void 0, void 0, function* () {
-            const _b = req.body, { _id } = _b, params = __rest(_b, ["_id"]);
+            const _c = req.body, { _id, id } = _c, params = __rest(_c, ["_id", "id"]);
             const { project_name } = req.params;
             const paramKeys = Object.keys(params);
             const query = paramKeys.reduce((q, key) => {
@@ -120,7 +130,7 @@ class IssueController {
                     return res.status(500).send(error.message);
                 if (!project)
                     return res.status(500).send('Project not found');
-                Issue_1.default.findOneAndUpdate({ _id, project_name }, { $set: query }, { new: true }, (error, issue) => {
+                Issue_1.default.findOneAndUpdate({ _id: id || _id, project_name }, { $set: query }, { new: true }, (error, issue) => {
                     if (!issue)
                         return res.status(404).send('Issue does not exist');
                     if (error)

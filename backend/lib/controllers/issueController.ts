@@ -44,6 +44,7 @@ export default class IssueController {
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(404).send('project does not exist');
+      console.log('issue_id ', issue_id);
       Issue.findOneAndRemove(
         { _id: issue_id, project_name },
         (error, issue) => {
@@ -55,10 +56,8 @@ export default class IssueController {
       );
     });
   };
-  public getIssues = async (req: Request, res: Response) => {
-    const { project_name } = req.params;
-    const { offset, limit, ...params } = req.query;
-    const query = Object.keys(params).reduce(
+  private getQuery = (params, project_name) => {
+    return Object.keys(params).reduce(
       (q, key) => {
         const param = params[key];
         if (key === 'open') q['open'] = param === 'false' ? false : true;
@@ -67,6 +66,11 @@ export default class IssueController {
       },
       { project_name }
     );
+  };
+  public getIssues = async (req: Request, res: Response) => {
+    const { project_name } = req.params;
+    const { offset, limit, ...params } = req.query;
+    const query = this.getQuery(params, project_name);
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project does not exist');
@@ -77,16 +81,22 @@ export default class IssueController {
         (error, issues) => {
           if (!issues.length) return res.status(500).send('Not Found');
           if (error) return res.status(500).send(error.message);
-          Issue.countDocuments(query, (error, count) => {
-            if (error) return res.status(500).send(error.message);
-            res.json(issues);
-          });
+          res.json(issues);
         }
       );
     });
   };
+  public getCount = async (req: Request, res: Response) => {
+    const { project_name } = req.params;
+    const { offset, limit, ...params } = req.query;
+    const query = this.getQuery(params, project_name);
+    Issue.countDocuments(query, (error, count) => {
+      if (error) return res.status(500).send(error.message);
+      res.status(200).send('' + count);
+    });
+  };
   public update = async (req: Request, res: Response) => {
-    const { _id, ...params } = req.body;
+    const { _id, id, ...params } = req.body;
     const { project_name } = req.params;
     const paramKeys = Object.keys(params);
     const query = paramKeys.reduce((q, key) => {
@@ -94,13 +104,12 @@ export default class IssueController {
       if (param || typeof param === 'boolean') q[key] = param;
       return q;
     }, {});
-
     if (!paramKeys.length) return res.status(200).send('no fields to update');
     Project.findOne({ project_name }, (error, project) => {
       if (error) return res.status(500).send(error.message);
       if (!project) return res.status(500).send('Project not found');
       Issue.findOneAndUpdate(
-        { _id, project_name },
+        { _id: id || _id, project_name },
         { $set: query },
         { new: true },
         (error, issue) => {

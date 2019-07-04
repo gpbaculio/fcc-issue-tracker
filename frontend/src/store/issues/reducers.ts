@@ -89,13 +89,22 @@ export default (state = initState, action: IssuesActionTypes) => {
     }
     case TOGGLE_ISSUE_SUCCESS:
     case UPDATE_ISSUE_SUCCESS: {
-      const { issue } = action.payload;
+      const {
+        issue: { _id, ...props }
+      } = action.payload;
+      const issue = state.issues[_id];
+      console.log('ud is', {
+        ...issue,
+        ...props,
+        loading: null
+      });
       return {
         ...state,
         issues: {
           ...state.issues,
           [issue._id]: {
             ...issue,
+            ...props,
             loading: null
           }
         }

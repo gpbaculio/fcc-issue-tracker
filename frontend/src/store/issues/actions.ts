@@ -45,11 +45,17 @@ export const fetchIssues = ({
     const { data } = await axios.get(`/api/issues/${projectName}`, {
       params
     });
+    const { data: count } = await axios.get(
+      `/api/issues/count/${projectName}`,
+      {
+        params
+      }
+    );
     const {
       result: ids,
       entities: { issues }
     } = normalize(
-      data.issues.map((issue: IssueType) => ({
+      data.map((issue: IssueType) => ({
         ...issue,
         loading: ''
       })),
@@ -57,7 +63,7 @@ export const fetchIssues = ({
     );
     dispatch({
       type: FETCH_ISSUES_SUCCESS,
-      payload: { ids, issues, count: data.count, page }
+      payload: { ids, issues, count, page }
     });
   } catch (error) {
     dispatch({
@@ -100,14 +106,15 @@ export const toggleIssueStatus = ({
     payload: { id, loading: 'toggleStatus' }
   });
   try {
-    const {
-      data: { issue }
-    } = await axios({
+    const response = await axios({
       method: 'PUT',
       url: `/api/issues/${projectName}`,
-      data: { open, id }
+      data: { open, _id: id }
     });
-    dispatch({ type: TOGGLE_ISSUE_SUCCESS, payload: { issue } });
+    dispatch({
+      type: TOGGLE_ISSUE_SUCCESS,
+      payload: { issue: { _id: id, open } }
+    });
   } catch (error) {
     dispatch({
       type: REQUEST_FAILURE,
@@ -130,14 +137,11 @@ export const deleteIssue = ({
 > => async dispatch => {
   dispatch({ type: DELETE_ISSUE_REQUEST, payload: { id } });
   try {
-    const {
-      data: { issue }
-    } = await axios({
+    const response = await axios({
       method: 'DELETE',
-      url: `/api/issues/${projectName}`,
-      data: { id }
+      url: `/api/issues/${projectName}/${id}`
     });
-    dispatch({ type: DELETE_ISSUE_SUCCESS, payload: { id: issue._id } });
+    dispatch({ type: DELETE_ISSUE_SUCCESS, payload: { id } });
   } catch (error) {
     dispatch({
       type: REQUEST_FAILURE,
@@ -164,14 +168,15 @@ export const updateIssue = ({
     payload: { id, loading: 'updateIssue' }
   });
   try {
-    const {
-      data: { issue }
-    } = await axios({
+    const response = await axios({
       method: 'PUT',
       url: `/api/issues/${projectName}`,
-      data: { ...params, id }
+      data: { ...params, _id: id }
     });
-    dispatch({ type: UPDATE_ISSUE_SUCCESS, payload: { issue } });
+    dispatch({
+      type: UPDATE_ISSUE_SUCCESS,
+      payload: { issue: { _id: id, ...params } }
+    });
   } catch (error) {
     dispatch({
       type: REQUEST_FAILURE,

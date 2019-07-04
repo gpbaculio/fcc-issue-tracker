@@ -56,7 +56,7 @@ class SearchIssues extends Component<SearchProjectProps, SearchProjectState> {
   render() {
     const { loading, text, issues, hasSearched } = this.state;
     return (
-      <div className='search-container w-100 p-3 d-flex justify-content-center'>
+      <div className='my-3 search-container w-100 p-3 d-flex justify-content-center'>
         <Form inline className='d-flex w-50 justify-content-around'>
           <FormGroup className='flex-grow-1'>
             <Label for='searchText' className='mr-3 col-form-label-lg'>

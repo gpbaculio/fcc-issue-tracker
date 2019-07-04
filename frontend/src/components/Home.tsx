@@ -8,23 +8,27 @@ import SearchProject from './SearchProject';
 const Home = () => {
   return (
     <React.Fragment>
-      <h2 className='text-center'>FreeCodeCamp Issue Tracker</h2>
-      <ol>
-        {userStories.map((userStory, i) => (
-          <li key={userStory.length * i}>{userStory}</li>
-        ))}
-      </ol>
-      <h4>Usage</h4>
-      <ul>
-        {usageSamples.map((usage, i) => (
-          <li key={usage.length * i}>{usage}</li>
-        ))}
-      </ul>
-      <h4>Example Return</h4>
-      <div>{sampleReturn}</div>
       <Row>
         <Col>
+          <h2 className='text-center'>FreeCodeCamp Issue Tracker</h2>
           <SearchProject />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <ol>
+            {userStories.map((userStory, i) => (
+              <li key={userStory.length * i}>{userStory}</li>
+            ))}
+          </ol>
+          <h4>Usage</h4>
+          <ul>
+            {usageSamples.map((usage, i) => (
+              <li key={usage.length * i}>{usage}</li>
+            ))}
+          </ul>
+          <h4>Example Return</h4>
+          <div>{sampleReturn}</div>
         </Col>
       </Row>
       <Row className='my-3'>

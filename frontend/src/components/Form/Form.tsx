@@ -64,9 +64,12 @@ export class FormComponent extends Component<FormProps, FormState> {
     const { loading, error, message, alertVisible, ...params } = this.state;
     this.setState({ loading: true });
     try {
-      const { data } = await axios({
+      const response = await axios({
         method: type,
-        url: route.replace(':project_name', `${params.project_name}`),
+        url: route.replace(
+          ':project_name',
+          `${params.project_name}${type === 'DELETE' ? `/${params.id}` : ''}`
+        ),
         data: params
       });
       this.setState({

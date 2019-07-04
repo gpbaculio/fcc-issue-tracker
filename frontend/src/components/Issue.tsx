@@ -65,9 +65,10 @@ const Issue = ({
   };
   return (
     <Form
-      onSubmit={e => {
+      onSubmit={async e => {
         e.preventDefault();
-        updateIssue(updateIssueArgs);
+        await updateIssue(updateIssueArgs);
+        setEditing('');
       }}
       style={{ backgroundColor: open ? '#f5f5f5' : '#D3D3D3' }}
       className='w-50 my-2 p-4 issue-container mx-auto d-flex flex-column align-items-center'>

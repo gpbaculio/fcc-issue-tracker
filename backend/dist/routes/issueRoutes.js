@@ -20,6 +20,9 @@ class IssueRoutes {
             .put(this.issueController.update)
             .delete(this.issueController.delete);
         app
+            .route('/api/issues/count/:project_name')
+            .get(this.issueController.getCount);
+        app
             .route('/api/issues/:project_name/:issue_id')
             .delete(this.issueController.delete);
     }
